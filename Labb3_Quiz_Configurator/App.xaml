@@ -5,6 +5,8 @@
              StartupUri="MainWindow.xaml"
              >
     <Application.Resources>
-         
+        <Style TargetType="Label">
+            <Setter Property="FontWeight" Value="Bold"/>
+        </Style>
     </Application.Resources>
 </Application>

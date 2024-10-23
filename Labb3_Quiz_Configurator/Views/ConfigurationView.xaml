@@ -6,11 +6,11 @@
              xmlns:local="clr-namespace:Labb3_Quiz_Configurator.Views"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <UserControl.Resources>
+    <!--<UserControl.Resources>
         <Style TargetType="Label">
             <Setter Property="FontWeight" Value="Bold"/>
         </Style>
-    </UserControl.Resources>
+    </UserControl.Resources>-->
     
     <Grid>
         <Grid.ColumnDefinitions>
