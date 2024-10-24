@@ -4,29 +4,38 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Labb3_Quiz_Configurator.Dialogs"
+        xmlns:model="clr-namespace:Labb3_Quiz_Configurator.Model"
+        DataContext="{Binding Player}"
         mc:Ignorable="d"
         Title="CreateNewPackDialog" Height="250" Width="200"
         ResizeMode="NoResize">
     <Grid>
         <StackPanel Margin="10,10,10,10">
             <Label Content="Pack Name:"/>
-            <TextBox/>
+            <TextBox Text="{Binding PackName, UpdateSourceTrigger=PropertyChanged}"/>
             <Label Content="Difficulty:"/>
-            <ComboBox>
-                <ComboBoxItem Content="Easy"/>
-                <ComboBoxItem Content="Medium"/>
-                <ComboBoxItem Content="Hard"/>
+            <ComboBox SelectedItem="{Binding SelectedDifficulty}"
+                      ItemsSource="{Binding DifficultyOptions}">
             </ComboBox>
-            <Label Content="Time Limit:"/>
+            <Label Content="Time Limit: {} seconds"
+                   HorizontalAlignment="Left"/>
             <Slider Minimum="5"
                     Maximum="120"
-                    Value="30"
+                    Value="{Binding TimeLimitInSeconds}"
                     TickFrequency="5"
                     TickPlacement="BottomRight"
                     />
-            <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom" HorizontalAlignment="Center" Margin="0,10,0,0">
+            <StackPanel Orientation="Horizontal" 
+                        VerticalAlignment="Bottom" 
+                        HorizontalAlignment="Center"
+                        Margin="0,10,0,0">
                 <Button Content="Cancel" Height="20" Width="50" Margin="10,10,10,10"/>
-                <Button Content="Create" Height="20" Width="50" Margin="10,10,10,10"/>
+                <Button Content="Create" 
+                        Height="20" 
+                        Width="50" 
+                        Margin="10,10,10,10"
+                        Command="{Binding CreatePackCommand}"
+                        />
             </StackPanel>
         </StackPanel>
     </Grid>

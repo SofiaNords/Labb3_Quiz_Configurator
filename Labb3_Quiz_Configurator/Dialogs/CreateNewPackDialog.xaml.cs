@@ -22,6 +22,7 @@ namespace Labb3_Quiz_Configurator.Dialogs
         public CreateNewPackDialog()
         {
             InitializeComponent();
+            DataContext = new CreateNewPackDialogViewModel();
         }
     }
 }
