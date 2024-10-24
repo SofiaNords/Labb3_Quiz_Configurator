@@ -11,7 +11,9 @@
         <Menu>
             <MenuItem Header="_File">
                 <MenuItem Header="_New Question Pack"
-                          Icon="{fa:Icon FolderOpen}"/>
+                          Command="{Binding NewPackCommand}"
+                          Icon="{fa:Icon FolderOpen}"
+                          />
                 <MenuItem Header="_Select Question Pack"
                           Icon="{fa:Icon SquareCheck}"/>
                 <MenuItem Header="_Delete Question Pack"
@@ -24,25 +26,28 @@
             <MenuItem Header="_Edit">
                 <MenuItem Header="_Add Question"
                           InputGestureText="Insert"
-                          Icon="{fa:Icon plus}"/>
+                          Icon="{fa:Icon Plus}"/>
                 <MenuItem Header="_Remove Question" 
                           InputGestureText="Delete"
-                          Icon="{fa:Icon minus}"/>
+                          Icon="{fa:Icon Minus}"/>
                 <MenuItem Header="_Pack Options" 
                           InputGestureText="Ctrl+O"
-                          Icon="{fa:Icon filter}"/>
+                          Command="{Binding OpenPackCommand}"
+                          Icon="{fa:Icon SlidersH}"/>
             </MenuItem>
             <MenuItem Header="_View">
                 <MenuItem Header="_Play" 
                           InputGestureText="Ctrl+P"
-                          Icon="{fa:Icon play}"/>
+                          Icon="{fa:Icon Play}"/>
                 <MenuItem Header="_Edit" 
                           InputGestureText="Ctrl+E"
-                          Icon="{fa:Icon pen}"/>
+                          Icon="{fa:Icon Pen}"
+                          Command="{Binding PlayerViewModel.UpdateButtonCommand}"
+                          />
                 <Separator/>
                 <MenuItem Header="Fullscreen" 
                           InputGestureText="Alt+Enter"
-                          Icon="{fa:Icon display}"/>
+                          Icon="{fa:Icon Display}"/>
             </MenuItem>
         </Menu>
     </StackPanel>

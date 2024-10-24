@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Labb3_Quiz_Configurator.Views" d:DataContext="{d:DesignInstance Type=local:PlayerViewModel}"
-             DataContext="{Binding PlayerViewModel}"
+             DataContext="{Binding PlayerViewModel}" 
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
@@ -14,12 +14,13 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <Button Grid.Column="1"
+        <!--<Button Grid.Column="1"
                 VerticalAlignment="Center"
                 HorizontalAlignment="Center"
-                Content="{Binding Path=TestData}"
+                Content="{Binding TestData}"
                 Margin="10"
-                />
+                Command="{Binding UpdateButtonCommand}"
+                />-->
 
         <TextBlock TextWrapping="Wrap" 
                    Grid.Row="0" 
@@ -29,7 +30,7 @@
                    VerticalAlignment="Center" 
                    HorizontalAlignment="Stretch"
                    TextAlignment="Center"
-                   Text="Här är en test text för frågorna som ska stå ovanför rutorna"
+                   Text="{Binding Question}"
                    />
 
         <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Row="1" Grid.RowSpan="2">

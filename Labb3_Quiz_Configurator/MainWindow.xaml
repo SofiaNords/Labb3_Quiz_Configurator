@@ -7,6 +7,10 @@
         mc:Ignorable="d"
         xmlns:local="clr-namespace:Labb3_Quiz_Configurator" xmlns:view="clr-namespace:Labb3_Quiz_Configurator.Views" xmlns:viewmodel="clr-namespace:Labb3_Quiz_Configurator.ViewModel" d:DataContext="{d:DesignInstance Type=viewmodel:MainWindowViewModel}"
         Title="MainWindow" Height="450" Width="800">
+    <Window.InputBindings>
+        <KeyBinding Key="U" Modifiers="Ctrl" Command="{Binding PlayerViewModel.UpdateButtonCommand}" />
+    </Window.InputBindings>
+    
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -16,9 +20,9 @@
         <view:MenuView Grid.Row="0"/>
 
 
-        <!--<view:ConfigurationView Grid.Row="1"/>-->
+        <view:ConfigurationView Grid.Row="1"/>
 
-        <view:PlayerView Grid.Row="1"/>
+        <!--<view:PlayerView Grid.Row="1"/>-->
         
     </Grid>
 </Window>
