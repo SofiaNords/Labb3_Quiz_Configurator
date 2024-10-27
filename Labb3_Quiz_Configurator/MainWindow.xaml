@@ -16,13 +16,10 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        
+
         <view:MenuView Grid.Row="0"/>
 
+        <ContentControl Grid.Row="1" Content="{Binding CurrentView}" />
 
-        <view:ConfigurationView Grid.Row="1"/>
-
-        <!--<view:PlayerView Grid.Row="1"/>-->
-        
     </Grid>
 </Window>

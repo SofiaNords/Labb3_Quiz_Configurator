@@ -1,16 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Labb3_Quiz_Configurator.ViewModel;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace Labb3_Quiz_Configurator.Dialogs
 {
@@ -19,10 +8,15 @@ namespace Labb3_Quiz_Configurator.Dialogs
     /// </summary>
     public partial class CreateNewPackDialog : Window
     {
-        public CreateNewPackDialog()
+        public CreateNewPackDialog(MainWindowViewModel mainWindowViewModel)
         {
             InitializeComponent();
-            DataContext = new CreateNewPackDialogViewModel();
+            DataContext = new CreateNewPackDialogViewModel(mainWindowViewModel);
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
         }
     }
 }

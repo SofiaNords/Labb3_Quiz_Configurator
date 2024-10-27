@@ -4,30 +4,30 @@ using System.Collections.ObjectModel;
 namespace Labb3_Quiz_Configurator.ViewModel
 {
     // ViewModel som representerar ett frågepaket.
-    class QuestionPackViewModel : ViewModelBase
+    public class QuestionPackViewModel : ViewModelBase
     {
-        // En privat variabel för att hålla referensten till modellen QuestionPack
+        // En privat variabel för att hålla referensen till modellen QuestionPack
         private readonly QuestionPack model;
 
-        // Konstruktorn som tar emot en QuestionPack-modell
+        // Egenskap som representerar listan av frågor i paketet.
+        public ObservableCollection<Question> Questions { get; }
+
+        // Konstruktorn tar en QuestionPack som parameter
         public QuestionPackViewModel(QuestionPack model)
         {
-            // Tilldelar modellen till den privata variabeln.
             this.model = model;
-
-            // Initierar Questions som en ObservableCollection av frågor.
-            this.Questions = new ObservableCollection<Question>(model.Questions);
+            Questions = new ObservableCollection<Question>(model.Questions); // Initiera Questions här
         }
 
         // Egenskap som representerar namnet på frågepaketet.
-        public string Name 
-        { 
+        public string Name
+        {
             get => model.Name; // Hämtar namnet från modellen.
-            set 
+            set
             {
                 model.Name = value; // Sätter namnet i modellen.
                 RaisePropertyChanged(); // Signalera att namnet har ändrats.
-            } 
+            }
         }
 
         // Egenskap för svårighetsgrad
@@ -51,9 +51,5 @@ namespace Labb3_Quiz_Configurator.ViewModel
                 RaisePropertyChanged(); // Signalera att tidsgränsen har ändrats.
             }
         }
-
-        // Egenskap som representerar listan av frågor i paketet.
-        public ObservableCollection<Question> Questions { get; }
-
     }
 }

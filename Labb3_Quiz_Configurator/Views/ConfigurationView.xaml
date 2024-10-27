@@ -4,16 +4,16 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:fa="http://schemas.awesome.incremented/wpf/xaml/fontawesome.sharp"
-             xmlns:local="clr-namespace:Labb3_Quiz_Configurator.Views"
+             xmlns:local="clr-namespace:Labb3_Quiz_Configurator.Views" 
+             xmlns:viewmodel="clr-namespace:Labb3_Quiz_Configurator.ViewModel"
+             xmlns:converter="clr-namespace:Labb3_Quiz_Configurator.Converter"
+             d:DataContext="{d:DesignInstance Type=viewmodel:MainWindowViewModel}"
              DataContext="{Binding ConfigurationViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <!--<UserControl.Resources>
-        <Style TargetType="Label">
-            <Setter Property="FontWeight" Value="Bold"/>
-        </Style>
-    </UserControl.Resources>-->
-    
+    <UserControl.Resources>
+        <converter:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+    </UserControl.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition />
@@ -26,12 +26,17 @@
             <RowDefinition Height="2*"/>
         </Grid.RowDefinitions>
 
-        <Label Content="Default Question Pack" Grid.Row="0" Margin="10,0,10,0"/>
+        <Label Content="{Binding CurrentPackName}" Grid.Row="0" Margin="10,0,10,0"/>
 
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Grid.Row="0" Margin="10,0,10,0">
+        <StackPanel Orientation="Horizontal" 
+                    HorizontalAlignment="Right" 
+                    VerticalAlignment="Center" 
+                    Grid.Row="0" 
+                    Margin="10,0,10,0">
             <Button Height="15" 
                     Width="15" 
                     Margin="5,0,0,0"
+                    Command="{Binding OpenPackCommand}"
                     >
                 <StackPanel Orientation="Horizontal">
                     <fa:IconBlock Icon="SlidersH"/>
@@ -40,6 +45,7 @@
             <Button Height="15" 
                     Width="15" 
                     Margin="5,0,0,0"
+                    Command="{Binding AddQuestionCommand}"
                     >
                 <StackPanel Orientation="Horizontal">
                     <fa:IconBlock Icon="Plus"/>
@@ -48,32 +54,54 @@
             <Button Height="15" 
                     Width="15" 
                     Margin="5,0,0,0"
+                    Command="{Binding RemoveQuestionCommand}"
+                    IsEnabled="{Binding IsRemoveQuestionEnabled}"
                     >
                 <StackPanel Orientation="Horizontal">
                     <fa:IconBlock Icon="Minus"/>
                 </StackPanel>
             </Button>
         </StackPanel>
-        
-        <ListBox Grid.Row="1" Margin="10,0,10,10" Grid.RowSpan="2">
-            <ListBoxItem>Question:</ListBoxItem>
-            <ListBoxItem>Question:</ListBoxItem>
+
+        <ListBox Grid.Row="1" 
+                 Margin="10,0,10,10" 
+                 Grid.RowSpan="2"
+                 ItemsSource="{Binding Questions}"
+                 SelectedItem="{Binding SelectedQuestion, Mode=TwoWay}">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel>
+                        <TextBlock Text="Question:" FontWeight="Bold"/>
+                        <TextBlock Text="{Binding Query}" />
+                    </StackPanel>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
         </ListBox>
 
-        <StackPanel Grid.Column="1" Grid.Row="1" Margin="10,0,10,0">
+        <StackPanel Grid.Column="1" 
+                    Grid.Row="1" 
+                    Margin="10,0,10,0"
+                    Visibility="{Binding IsQuestionInputVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
             <Label Content="Question:"/>
-            <TextBox VerticalAlignment="Stretch" Height="Auto" MinHeight="60"/>
+            <TextBox VerticalAlignment="Stretch" 
+                     Height="Auto" 
+                     MinHeight="60"
+                     Text="{Binding NewQuestion.Query, UpdateSourceTrigger=PropertyChanged}"/>
         </StackPanel>
 
-        <StackPanel Grid.Column="1" Grid.Row="2" Margin="10,0,10,0">
+        <StackPanel Grid.Column="1"
+                    Grid.Row="2" 
+                    Margin="10,0,10,0"
+                    Visibility="{Binding IsQuestionInputVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
             <Label Content="Correct Answer:"/>
-            <TextBox />
+            <TextBox Text="{Binding NewQuestion.CorrectAnswer, UpdateSourceTrigger=PropertyChanged}"/>
             <Label Content="First Incorrect Answer:"/>
-            <TextBox />
+            <TextBox Text="{Binding NewQuestion.FirstIncorrectAnswer, UpdateSourceTrigger=PropertyChanged}"/>
             <Label Content="Second Incorrect Answer:"/>
-            <TextBox />
+            <TextBox Text="{Binding NewQuestion.SecondIncorrectAnswer, UpdateSourceTrigger=PropertyChanged}"/>
             <Label Content="Third Incorrect Answer:"/>
-            <TextBox />
+            <TextBox Text="{Binding NewQuestion.ThirdIncorrectAnswer, UpdateSourceTrigger=PropertyChanged}"/>
         </StackPanel>
     </Grid>
 </UserControl>
+

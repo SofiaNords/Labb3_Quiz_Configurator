@@ -3,20 +3,36 @@ using Labb3_Quiz_Configurator.Dialogs;
 using Labb3_Quiz_Configurator.Model;
 using Labb3_Quiz_Configurator.Views;
 using System.Collections.ObjectModel;
-using System.Windows.Input;
 
 namespace Labb3_Quiz_Configurator.ViewModel
 {
-    // Huvud-ViewModel för applikationens huvudfönster där bland annat MenuView hanteras
-    class MainWindowViewModel : ViewModelBase
+    // Huvud-ViewModel för applikationens huvudfönster.
+    public class MainWindowViewModel : ViewModelBase
     {
+        // Egenskap för att hålla aktuell vy (används för vyväxling).
+        private object currentView;
+        public object CurrentView
+        {
+            get => currentView;
+            set
+            {
+                currentView = value;
+                RaisePropertyChanged();
+                RaisePropertyChanged(nameof(IsEditEnabled)); // Uppdatera Edit-knappen
+                RaisePropertyChanged(nameof(IsPlayEnabled)); // Uppdatera Play-knappen
+            }
+        }
+        // Egenskap för att kontrollera om Edit-knappen ska vara aktiv.
+        public bool IsEditEnabled => CurrentView is not ConfigurationView;
+
+        // Egenskap för att kontroller om Play-knappen ska vara aktiv.
+        public bool IsPlayEnabled => CurrentView is not PlayerView;
+
         // ObservableCollection som håller en lista av frågepaket.
         public ObservableCollection<QuestionPackViewModel> Packs { get; set; }
 
-        // ViewModel för konfigurationsvyn.
+        // ViewModels för de olika vyerna.
         public ConfigurationViewModel ConfigurationViewModel { get; }
-
-        // ViewModel för spelarvyn.
         public PlayerViewModel PlayerViewModel { get; }
 
         // Privat variabel för att hålla det aktiva frågepaketet.
@@ -30,45 +46,64 @@ namespace Labb3_Quiz_Configurator.ViewModel
             {
                 _activePack = value;
                 RaisePropertyChanged(); // Signalera att ActivePack har ändrats.
-                ConfigurationViewModel.RaisePropertyChanged("ActivePack"); // Ett exempel på att man måste anropa RaisePropertyChanged från ett annat ställe i koden. 
+                ConfigurationViewModel.RaisePropertyChanged(nameof(ConfigurationViewModel.CurrentPackName)); // Uppdatera ConfigurationViewModel.
             }
         }
 
+        // Kommandon för olika åtgärder.
         public DelegateCommand NewPackCommand { get; }
-
         public DelegateCommand OpenPackCommand { get; }
+        public DelegateCommand SwitchToPlayerViewCommand { get; }
+        public DelegateCommand SwitchToConfigurationViewCommand { get; }
 
         // Konstruktorn för MainWindowViewModel.
         public MainWindowViewModel()
         {
-            // Initierar ConfigurationViewModel med en referens till MainWindowViewModel.
-            ConfigurationViewModel = new ConfigurationViewModel(this);
+            // Initiera vyer och kommandon
+            SwitchToPlayerViewCommand = new DelegateCommand(SwitchToPlayerView);
+            SwitchToConfigurationViewCommand = new DelegateCommand(SwitchToConfigurationView);
 
-            // Intitierar PlayerViewModel med en referens till MainWindowViewModel.
+            // Sätt initial vy
+            CurrentView = new ConfigurationView();
+
+            // Initiera ViewModels
+            ConfigurationViewModel = new ConfigurationViewModel(this);
             PlayerViewModel = new PlayerViewModel(this);
 
-            // Sätter ett standardaktigt frågepaket som det aktiva paketet.
-            ActivePack = new QuestionPackViewModel(new QuestionPack("My Question Pack")); // Denna ska förmodligen inte sättas i konstruktorn sedan.
+            // Sätt ett standardaktigt frågepaket som det aktiva paketet.
+            ActivePack = new QuestionPackViewModel(new QuestionPack("My Question Pack"));
 
             // Initiera Packs som en tom ObservableCollection.
-            Packs = new ObservableCollection<QuestionPackViewModel>(); // Detta var ChatGPTS förslag
+            Packs = new ObservableCollection<QuestionPackViewModel>();
 
-            // Kommando som anropas när användaren väljer New Question Pack
+            // Kommandon för dialoger
             NewPackCommand = new DelegateCommand(OpenCreateNewPackDialog);
-
-            // Kommando som anropas när användaren väljer Pack Options
             OpenPackCommand = new DelegateCommand(OpenPackOption);
         }
 
+        // Metoder för att växla vyer
+        private void SwitchToPlayerView(object obj)
+        {
+            CurrentView = new PlayerView(); // Skapa en instans av PlayerView
+        }
+
+        private void SwitchToConfigurationView(object obj)
+        {
+            CurrentView = new ConfigurationView(); // Skapa en instans av ConfigurationView
+        }
+
+
+        // Öppna dialog för frågepaketsalternativ
         private void OpenPackOption(object obj)
         {
             var dialog = new PackOptionsDialog();
             dialog.ShowDialog();
         }
 
+        // Öppna dialog för att skapa ett nytt frågepaket
         private void OpenCreateNewPackDialog(object obj)
         {
-            var dialog = new CreateNewPackDialog();
+            var dialog = new CreateNewPackDialog(this);
             dialog.ShowDialog();
         }
     }

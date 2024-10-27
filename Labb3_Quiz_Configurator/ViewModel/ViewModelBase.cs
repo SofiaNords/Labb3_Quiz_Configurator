@@ -4,7 +4,7 @@ using System.Runtime.CompilerServices;
 namespace Labb3_Quiz_Configurator.ViewModel
 {
     // Bas-ViewModel-klass som implementerar INotifyPropertyChanged
-    class ViewModelBase : INotifyPropertyChanged
+    public class ViewModelBase : INotifyPropertyChanged
     {
         // Event som används för att signalera att en egenskap har ändrats.
         public event PropertyChangedEventHandler? PropertyChanged;

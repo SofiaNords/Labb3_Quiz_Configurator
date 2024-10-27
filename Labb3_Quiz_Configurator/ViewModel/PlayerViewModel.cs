@@ -2,10 +2,10 @@
 using Labb3_Quiz_Configurator.ViewModel;
 using System.Windows.Threading;
 
-namespace Labb3_Quiz_Configurator.Views
+namespace Labb3_Quiz_Configurator.ViewModel
 {
     // ViewModel för spelvyn. Hanterar logik relaterad till spelarsessioen.
-    class PlayerViewModel : ViewModelBase
+    public class PlayerViewModel : ViewModelBase
     {
         // En privat variabel för att hålla en referens till MainWindowViewModel.
         private readonly MainWindowViewModel? mainWindowViewModel;

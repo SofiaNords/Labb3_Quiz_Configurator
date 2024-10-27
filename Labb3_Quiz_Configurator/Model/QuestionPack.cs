@@ -1,10 +1,10 @@
 ﻿namespace Labb3_Quiz_Configurator.Model
 {
     // Enum som definierar svårighetsgrader för quizzen.
-    enum Difficulty { Easy, Medium, Hard }
+    public enum Difficulty { Easy, Medium, Hard }
 
     // Klass som representerar ett paket med frågor (frågepaket).
-    class QuestionPack
+    public class QuestionPack
     {
         // Konstruktorn för att skapa ett nytt frågepaket.
         // Den tar emot ett namn, en svårighetesgrad (standard är Medium)

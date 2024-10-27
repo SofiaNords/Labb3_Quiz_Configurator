@@ -1,7 +1,7 @@
 ﻿namespace Labb3_Quiz_Configurator.Model
 {
     // En klass som representerar en fråga i quizet
-    class Question
+    public class Question
     {
         // Konstruktorn används för att skapa en ny instans av Question.
         // Den tar emot en fråga (query), ett korrekt svar (correctAnswer)
