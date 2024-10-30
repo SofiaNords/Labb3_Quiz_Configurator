@@ -1,4 +1,6 @@
-﻿using System.Windows;
+﻿using Labb3_Quiz_Configurator.ViewModel;
+using System.Windows;
+using Labb3_Quiz_Configurator.Enums;
 
 namespace Labb3_Quiz_Configurator.Dialogs
 {
@@ -7,9 +9,17 @@ namespace Labb3_Quiz_Configurator.Dialogs
     /// </summary>
     public partial class PackOptionsDialog : Window
     {
-        public PackOptionsDialog()
+        public PackOptionsDialog(MainWindowViewModel mainWindowViewModel)
         {
             InitializeComponent();
+            this.DataContext = new ConfigurationViewModel(mainWindowViewModel); 
+        }
+
+        public PackOptionsDialog(ConfigurationViewModel viewModel)
+        {
+            InitializeComponent();
+            this.DataContext = viewModel;
+            //DataContext = (App.Current.MainWindow as MainWindow).DataContext;
         }
     }
 }

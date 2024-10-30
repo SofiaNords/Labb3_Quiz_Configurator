@@ -3,6 +3,8 @@ using Labb3_Quiz_Configurator.Dialogs;
 using Labb3_Quiz_Configurator.Model;
 using Labb3_Quiz_Configurator.Views;
 using System.Collections.ObjectModel;
+using System.Reflection.Metadata;
+using System.Windows;
 
 namespace Labb3_Quiz_Configurator.ViewModel
 {
@@ -11,6 +13,8 @@ namespace Labb3_Quiz_Configurator.ViewModel
     {
         // Egenskap för att hålla aktuell vy (används för vyväxling).
         private object currentView;
+        private QuestionPackViewModel parameter;
+
         public object CurrentView
         {
             get => currentView;
@@ -35,26 +39,15 @@ namespace Labb3_Quiz_Configurator.ViewModel
         public ConfigurationViewModel ConfigurationViewModel { get; }
         public PlayerViewModel PlayerViewModel { get; }
 
-        // Privat variabel för att hålla det aktiva frågepaketet.
-        private QuestionPackViewModel? _activePack;
-
-        // Egenskap som representerar det aktiva frågepaketet.
-        public QuestionPackViewModel? ActivePack
-        {
-            get => _activePack;
-            set
-            {
-                _activePack = value;
-                RaisePropertyChanged(); // Signalera att ActivePack har ändrats.
-                ConfigurationViewModel.RaisePropertyChanged(nameof(ConfigurationViewModel.CurrentPackName)); // Uppdatera ConfigurationViewModel.
-            }
-        }
+        private bool _isFullScreen;
 
         // Kommandon för olika åtgärder.
         public DelegateCommand NewPackCommand { get; }
         public DelegateCommand OpenPackCommand { get; }
+        public DelegateCommand SelectQuestionPackCommand { get; }
         public DelegateCommand SwitchToPlayerViewCommand { get; }
         public DelegateCommand SwitchToConfigurationViewCommand { get; }
+        public DelegateCommand FullScreenCommand { get; }
 
         // Konstruktorn för MainWindowViewModel.
         public MainWindowViewModel()
@@ -63,22 +56,56 @@ namespace Labb3_Quiz_Configurator.ViewModel
             SwitchToPlayerViewCommand = new DelegateCommand(SwitchToPlayerView);
             SwitchToConfigurationViewCommand = new DelegateCommand(SwitchToConfigurationView);
 
-            // Sätt initial vy
-            CurrentView = new ConfigurationView();
+            // Initiera Packs som en tom ObservableCollection.
+            Packs = new ObservableCollection<QuestionPackViewModel>();
 
             // Initiera ViewModels
             ConfigurationViewModel = new ConfigurationViewModel(this);
             PlayerViewModel = new PlayerViewModel(this);
 
-            // Sätt ett standardaktigt frågepaket som det aktiva paketet.
-            ActivePack = new QuestionPackViewModel(new QuestionPack("My Question Pack"));
-
-            // Initiera Packs som en tom ObservableCollection.
-            Packs = new ObservableCollection<QuestionPackViewModel>();
+            // Sätt initial vy
+            CurrentView = new ConfigurationView();
 
             // Kommandon för dialoger
             NewPackCommand = new DelegateCommand(OpenCreateNewPackDialog);
             OpenPackCommand = new DelegateCommand(OpenPackOption);
+
+            SelectQuestionPackCommand = new DelegateCommand(SelectQuestionPack);
+
+            FullScreenCommand = new DelegateCommand(_ => ToggleFullScreen());
+
+        }
+
+        public void ToggleFullScreen()
+        {
+            _isFullScreen = !_isFullScreen;
+            var window = Application.Current.MainWindow;
+
+            if (_isFullScreen)
+            {
+                window.WindowStyle = WindowStyle.None;
+                window.WindowState = WindowState.Normal;
+                window.Left = 0;
+                window.Top = 0;
+                window.Width = SystemParameters.PrimaryScreenWidth;
+                window.Height = SystemParameters.PrimaryScreenHeight;
+            }
+            else
+            {
+                window.WindowStyle = WindowStyle.SingleBorderWindow;
+                window.WindowState = WindowState.Normal;
+                window.Width = 800; // Sätt tillbaka till din önskade storlek
+                window.Height = 450; // Sätt tillbaka till din önskade storlek
+            }
+        }
+
+        private void SelectQuestionPack(object selectedPack)
+        {
+            if (selectedPack is QuestionPackViewModel pack)
+            {
+                ConfigurationViewModel.ActivePack = pack; // Sätt det aktiva paketet i ConfigurationViewModel
+            }
+            CurrentView = new ConfigurationView(); // Lägg till denna rad
         }
 
         // Metoder för att växla vyer
@@ -92,11 +119,10 @@ namespace Labb3_Quiz_Configurator.ViewModel
             CurrentView = new ConfigurationView(); // Skapa en instans av ConfigurationView
         }
 
-
         // Öppna dialog för frågepaketsalternativ
         private void OpenPackOption(object obj)
         {
-            var dialog = new PackOptionsDialog();
+            var dialog = new PackOptionsDialog(ConfigurationViewModel);
             dialog.ShowDialog();
         }
 

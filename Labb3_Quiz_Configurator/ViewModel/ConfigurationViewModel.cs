@@ -1,111 +1,114 @@
 ﻿using Labb3_Quiz_Configurator.Command;
-using Labb3_Quiz_Configurator.ViewModel;
+using Labb3_Quiz_Configurator.Dialogs;
+using Labb3_Quiz_Configurator.Model;
+using Labb3_Quiz_Configurator.Views;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows;
 
 namespace Labb3_Quiz_Configurator.ViewModel
 {
-    // ViewModel för konfigurationsvyn, ärver från ViewModelBase.
+    // ViewModel för konfigurationen av frågorna
     public class ConfigurationViewModel : ViewModelBase
     {
-        // Referens till MainWindowViewModel.
-        private readonly MainWindowViewModel? mainWindowViewModel;
+        private readonly MainWindowViewModel mainWindowViewModel;
 
-        // Egenskap för att kontrollera om ta bort-knappen ska vara aktiv.
-        public bool IsRemoveQuestionEnabled
-        {
-            get => SelectedQuestion != null; // Aktiv om en fråga är vald.
-        }
-
-        private MainWindowViewModel? _mainWindowViewModel;
-
-        // Samling av frågor, observerbar för att uppdatera UI automatiskt.
+        // En ObservableCollection för att hålla frågorna
         public ObservableCollection<QuestionViewModel> Questions { get; }
 
-        // Egenskap för att få namnet på det aktiva frågepaketet
-        public string CurrentPackName => mainWindowViewModel.ActivePack?.Name ?? "Default Question Pack";
+        // Privat variabel för att hålla det aktiva frågepaketet.
+        private QuestionPackViewModel? _activePack;
 
-        // Kommando för att lägga till en fråga.
-        public DelegateCommand AddQuestionCommand { get; }
-
-        // Kommando för att ta bort en fråga.
-        public DelegateCommand RemoveQuestionCommand { get; }
-
-        // Konstruktorn som tar emot MainWindowViewModel.
-        public ConfigurationViewModel(MainWindowViewModel? mainWindowViewModel)
+        // Egenskap som representerar det aktiva frågepaketet
+        public QuestionPackViewModel? ActivePack
         {
-            this.mainWindowViewModel = mainWindowViewModel;
-
-            // Initiera samlingen av frågor och andra variabler.
-            Questions = new ObservableCollection<QuestionViewModel>();
-            NewQuestion = new QuestionViewModel();
-            NewQuestion.PropertyChanged += NewQuestion_PropertyChanged; // Registrera händelsehanterare för NewQuestion.
-
-            // Initiera kommandon.
-            AddQuestionCommand = new DelegateCommand(AddQuestion);
-            RemoveQuestionCommand = new DelegateCommand(RemoveQuestion);
-
-            // Dölja inmatningsfält initialt.
-            IsQuestionInputVisible = false;
-        }
-
-        // Metod för att ta bort den valda frågan.
-        private void RemoveQuestion(object obj)
-        {
-            if (SelectedQuestion != null)
-            {
-                // Ta bort den valda frågan från Questions-samlingen.
-                Questions.Remove(SelectedQuestion);
-
-                // Sätt SelectedQuestion till null för att uppdatera UI.
-                SelectedQuestion = null;
-
-                // Göm inmatningsfälten.
-                IsQuestionInputVisible = false;
-            }
-        }
-
-        // Hanterar förändringar i NewQuestion och uppdaterar SelectedQuestion.
-        private void NewQuestion_PropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            if (SelectedQuestion != null)
-            {
-                // Uppdatera SelectedQuestion med värden från NewQuestion baserat på förändrat egenskap.
-                switch (e.PropertyName)
-                {
-                    case nameof(NewQuestion.Query):
-                        SelectedQuestion.Query = NewQuestion.Query;
-                        break;
-                    case nameof(NewQuestion.CorrectAnswer):
-                        SelectedQuestion.CorrectAnswer = NewQuestion.CorrectAnswer;
-                        break;
-                    case nameof(NewQuestion.FirstIncorrectAnswer):
-                        SelectedQuestion.FirstIncorrectAnswer = NewQuestion.FirstIncorrectAnswer;
-                        break;
-                    case nameof(NewQuestion.SecondIncorrectAnswer):
-                        SelectedQuestion.SecondIncorrectAnswer = NewQuestion.SecondIncorrectAnswer;
-                        break;
-                    case nameof(NewQuestion.ThirdIncorrectAnswer):
-                        SelectedQuestion.ThirdIncorrectAnswer = NewQuestion.ThirdIncorrectAnswer;
-                        break;
-                }
-            }
-        }
-
-        // Kontrollerar synligheten av inmatningsfälten.
-        private bool isQuestionInputVisible;
-        public bool IsQuestionInputVisible
-        {
-            get => isQuestionInputVisible;
+            get => _activePack;
             set
             {
-                isQuestionInputVisible = value;
-                RaisePropertyChanged(); // Utröna förändring.
+                _activePack = value;
+                RaisePropertyChanged(); // Signalera att ActivePack har ändrats.
+                RaisePropertyChanged(nameof(ActivePackName)); // Uppdatera ActivePackName.
+                LoadQuestionsFromActivePack(); // Ladda frågor när ActivePack ändras
             }
         }
 
-        // Den valda frågan som kan redigeras.
+        // Egenskap som returnerar namnet på det aktiva frågepaketet eller ett standardnamn
+        public string ActivePackName => ActivePack?.Name ?? "Default Question Pack";
+
+
+        // Variabler för att lagra information om frågepaketet
+        private string packName;
+        private Difficulty selectedDifficulty;
+        private int timeLimitInSeconds;
+
+
+        // Egenskap för att hantera namn på frågepaketet
+        public string PackName
+        {
+            get => packName;
+            set
+            {
+                packName = value;
+                RaisePropertyChanged();
+            }
+        }
+
+
+        // Egenskap för att välja svårighetsgrad
+        public Difficulty SelectedDifficulty
+        {
+            get => selectedDifficulty;
+            set
+            {
+                selectedDifficulty = value;
+                RaisePropertyChanged();
+            }
+        }
+
+        // Egenskap för att ställa in tidsgräns i sekunder
+        public int TimeLimitInSeconds
+        {
+            get => timeLimitInSeconds;
+            set
+            {
+                timeLimitInSeconds = value;
+                RaisePropertyChanged();
+            }
+        }
+
+        // Samling av svårighetsalternativ
+        public ObservableCollection<Difficulty> DifficultyOptions { get; }
+
+        // Kommandon för att skapa och hantera frågor
+        public DelegateCommand? CreatePackCommand { get; }
+
+
+        // Kommandon för att lägga till och ta bort frågor
+        public DelegateCommand AddQuestionCommand { get; }
+        public DelegateCommand RemoveQuestionCommand { get; }
+
+        // Privat variabel för att hantera en ny fråga
+        private QuestionViewModel newQuestion;
+        public QuestionViewModel NewQuestion
+        {
+            get => newQuestion;
+            set
+            {
+                // Avregistrera eventhanterare om det finns en tidigare ny fråga
+                if (newQuestion != null)
+                    newQuestion.PropertyChanged -= NewQuestion_PropertyChanged;
+
+                newQuestion = value;
+
+                // Registrera eventhanterare för den nya frågan
+                if (newQuestion != null)
+                    newQuestion.PropertyChanged += NewQuestion_PropertyChanged;
+
+                RaisePropertyChanged(); // Signalera att NewQuestion har ändrats
+            }
+        }
+
+        // Privat variabel för den valda frågan
         private QuestionViewModel? selectedQuestion;
         public QuestionViewModel? SelectedQuestion
         {
@@ -113,10 +116,100 @@ namespace Labb3_Quiz_Configurator.ViewModel
             set
             {
                 selectedQuestion = value;
-                RaisePropertyChanged(); // Utröna förändring.
-                UpdateNewQuestion(); // Uppdatera NewQuestion med valda frågans värden.
-                IsQuestionInputVisible = selectedQuestion != null; // Bestäm synlighet av inmatningsfält.
-                RaisePropertyChanged(nameof(IsRemoveQuestionEnabled)); // Utröna förändring för ta bort-knappen.
+                RaisePropertyChanged(); // Signalera att den valda frågan har ändrats
+                UpdateNewQuestion(); // Uppdatera NewQuestion med värden från den valda frågan
+                IsQuestionInputVisible = selectedQuestion != null; // Visa inmatningsfältet om en fråga är vald
+                RaisePropertyChanged(nameof(IsRemoveQuestionEnabled)); // Uppdatera möjligheten att ta bort en fråga
+            }
+        }
+       
+
+        // Konstruktorn för ConfigurationViewModel
+        public ConfigurationViewModel(MainWindowViewModel mainWindowViewModel)
+        {
+            this.mainWindowViewModel = mainWindowViewModel;
+
+            Questions = new ObservableCollection<QuestionViewModel>(); // Initiera Questions
+
+            CreatePackCommand = new DelegateCommand(CreatePack);
+
+            // Initiera ActivePack med ett nytt frågepaket
+            if (mainWindowViewModel.Packs.All(p => p.Name != "My Question Pack"))
+            {
+                var myPack = new Model.QuestionPack("My Question Pack");
+                ActivePack = new QuestionPackViewModel(myPack);
+            }
+
+            // Ställ in defaultvärden för PackName, SelectedDifficulty och TimeLimitInSeconds
+            PackName = "Default Pack Name";
+            SelectedDifficulty = Difficulty.Medium; // Sätt standard svårighetsgrad
+            TimeLimitInSeconds = 30; // Sätt standard tidsbegränsning
+
+            // Intitiera DifficultyOptions....
+            DifficultyOptions = new ObservableCollection<Difficulty>((Difficulty[])Enum.GetValues(typeof(Difficulty)));
+
+            NewQuestion = new QuestionViewModel(); // Initiera NewQuestion
+            NewQuestion.PropertyChanged += NewQuestion_PropertyChanged; // Registrera eventhanterare
+
+            // Initiera kommandon för att lägga till och ta bort frågor
+            AddQuestionCommand = new DelegateCommand(AddQuestion);
+            RemoveQuestionCommand = new DelegateCommand(RemoveQuestion);
+
+            LoadQuestionsFromActivePack(); // Ladda frågor från det aktiva frågepaketet
+            IsQuestionInputVisible = false; // Dölja inmatningsfält initialt
+        }
+
+        // Metod för att skapa frågepaket
+        private void CreatePack(object obj)
+        {
+            if (mainWindowViewModel == null)
+            {
+                MessageBox.Show("Det gick inte att skapa ett nytt frågepaket. Vänligen försök igen senare", "Fel", MessageBoxButton.OK, MessageBoxImage.Error);
+                return; // Avbryt operationen
+            }
+
+            // Skapa ett nytt QuestionPack
+            var newPack = new QuestionPack(PackName, SelectedDifficulty, TimeLimitInSeconds);
+
+            // Skapa en QuestionPackViewModel från QuestionPack
+            var newPackViewModel = new QuestionPackViewModel(newPack);
+
+
+            // Sätt det nya paketet som aktivt
+            ActivePack = newPackViewModel;
+
+            // Stäng dialogen
+            if (Application.Current.Windows.OfType<CreateNewPackDialog>().Any())
+            {
+                Application.Current.Windows.OfType<CreateNewPackDialog>().First().Close();
+            }
+
+        }
+
+        // Metod för att ladda frågor från det aktiva frågepaketet
+        public void LoadQuestionsFromActivePack()
+        {
+            if (ActivePack != null)
+            {
+                // Kontrollera om ActivePack redan finns i mainWindowViewModel.Packs
+                if (!mainWindowViewModel.Packs.Contains(ActivePack))
+                {
+                    mainWindowViewModel.Packs.Add(ActivePack); // Lägg till paketet i listan över frågepaket
+                }
+
+                Questions.Clear(); // Rensa befintliga frågor
+                foreach (var question in ActivePack.Questions) // Iterera genom frågorna i ActivePack
+                {
+                    // Lägg till varje fråga som en QuestionViewModel i Questions
+                    Questions.Add(new QuestionViewModel
+                    {
+                        Query = question.Query,
+                        CorrectAnswer = question.CorrectAnswer,
+                        FirstIncorrectAnswer = question.IncorrectAnswers[0],
+                        SecondIncorrectAnswer = question.IncorrectAnswers[1],
+                        ThirdIncorrectAnswer = question.IncorrectAnswers[2]
+                    });
+                }
             }
         }
 
@@ -133,19 +226,30 @@ namespace Labb3_Quiz_Configurator.ViewModel
             }
         }
 
-        // Instans av NewQuestion som ska bindas till UI.
-        private QuestionViewModel newQuestion;
-        public QuestionViewModel NewQuestion
+        // Metod för att ta bort en vald fråga
+        private void RemoveQuestion(object obj)
         {
-            get => newQuestion;
-            set
+            if (SelectedQuestion != null)
             {
-                newQuestion = value;
-                RaisePropertyChanged(); // Utröna förändring.
+                Questions.Remove(SelectedQuestion); // Ta bort den valda frågan från Questions
+                SelectedQuestion = null; // Återställ den valda frågan
+                IsQuestionInputVisible = false; // Dölja inmatningsfältet
             }
         }
 
-        // Lägger till en ny fråga med förinställt innehåll.
+        // Privat variabel för att hantera visibiliteten av inmatningsfältet
+        private bool isQuestionInputVisible;
+        public bool IsQuestionInputVisible
+        {
+            get => isQuestionInputVisible;
+            set
+            {
+                isQuestionInputVisible = value;
+                RaisePropertyChanged(); // Signalera att IsQuestionInputVisible har ändrats
+            }
+        }
+
+        // Metod för att lägga till en ny fråga
         private void AddQuestion(object obj)
         {
             var newQuestionToAdd = new QuestionViewModel
@@ -157,15 +261,57 @@ namespace Labb3_Quiz_Configurator.ViewModel
                 ThirdIncorrectAnswer = ""
             };
 
-            Questions.Add(newQuestionToAdd); // Lägg till i samlingen.
-            SelectedQuestion = newQuestionToAdd; // Välj den nya frågan.
-            IsQuestionInputVisible = true; // Gör inmatningsfält synliga.
+            Questions.Add(newQuestionToAdd); // Lägg till den nya frågan i Questions
+
+
+            // Lägg även till den nya frågan i ActivePack
+            if (ActivePack != null)
+            {
+                var questionToAdd = new Question(
+                    newQuestionToAdd.Query,
+                    newQuestionToAdd.CorrectAnswer,
+                    newQuestionToAdd.FirstIncorrectAnswer,
+                    newQuestionToAdd.SecondIncorrectAnswer,
+                    newQuestionToAdd.ThirdIncorrectAnswer
+                );
+
+                ActivePack.Questions.Add(questionToAdd); // Lägg till i ActivePack
+            }
+
+            SelectedQuestion = newQuestionToAdd; // Sätt den nya frågan som vald
+            IsQuestionInputVisible = true; // Visa inmatningsfältet för att redigera frågan
         }
 
-        // Getter för att hämta den aktiva frågepaket.
-        public QuestionPackViewModel? ActivePack => mainWindowViewModel.ActivePack;
+        // Egenskap för att kontrollera om borttagningsknappen ska vara aktiverad
+        public bool IsRemoveQuestionEnabled => SelectedQuestion != null;
 
-        // Exponera OpenPackCommand från MainWindowViewModel.
+        // Eventhanterare för att reagera på ändringar i NewQuestion
+        private void NewQuestion_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (SelectedQuestion != null) // Kontrollera om en fråga är vald
+            {
+                switch (e.PropertyName)
+                {
+                    case nameof(NewQuestion.Query):
+                        SelectedQuestion.Query = NewQuestion.Query; // Uppdatera frågan
+                        break;
+                    case nameof(NewQuestion.CorrectAnswer):
+                        SelectedQuestion.CorrectAnswer = NewQuestion.CorrectAnswer; // Uppdatera korrekt svar
+                        break;
+                    case nameof(NewQuestion.FirstIncorrectAnswer):
+                        SelectedQuestion.FirstIncorrectAnswer = NewQuestion.FirstIncorrectAnswer; // Uppdatera första fel svar
+                        break;
+                    case nameof(NewQuestion.SecondIncorrectAnswer):
+                        SelectedQuestion.SecondIncorrectAnswer = NewQuestion.SecondIncorrectAnswer; // Uppdatera andra fel svar
+                        break;
+                    case nameof(NewQuestion.ThirdIncorrectAnswer):
+                        SelectedQuestion.ThirdIncorrectAnswer = NewQuestion.ThirdIncorrectAnswer; // Uppdatera tredje fel svar
+                        break;
+                }
+            }
+        }
+
+        // Kommandon för att öppna frågepaket, hämtas från huvud-ViewModel
         public DelegateCommand OpenPackCommand => mainWindowViewModel.OpenPackCommand;
     }
 }

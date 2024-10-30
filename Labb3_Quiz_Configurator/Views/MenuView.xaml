@@ -16,7 +16,18 @@
                           Icon="{fa:Icon FolderOpen}"
                           />
                 <MenuItem Header="_Select Question Pack"
-                          Icon="{fa:Icon SquareCheck}"/>
+                          Icon="{fa:Icon SquareCheck}">
+                    <ItemsControl ItemsSource="{Binding Packs}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <MenuItem Header="{Binding Name}"
+                                          Command="{Binding DataContext.SelectQuestionPackCommand, 
+                                                    RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
+                                          CommandParameter="{Binding}" />
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </MenuItem>
                 <MenuItem Header="_Delete Question Pack"
                           Icon="{fa:Icon Trash}"/>
                 <Separator/>
@@ -54,6 +65,7 @@
                 <Separator/>
                 <MenuItem Header="Fullscreen" 
                           InputGestureText="Alt+Enter"
+                          Command="{Binding FullScreenCommand}"
                           Icon="{fa:Icon Display}"/>
             </MenuItem>
         </Menu>
