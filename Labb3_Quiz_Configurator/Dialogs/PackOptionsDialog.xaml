@@ -21,7 +21,15 @@
                 <ComboBoxItem Content="Medium" Tag="{x:Static enums:Difficulty.Medium}" />
                 <ComboBoxItem Content="Hard" Tag="{x:Static enums:Difficulty.Hard}" />
             </ComboBox>
-            <Label Content="Time Limit:"/>
+            <Label HorizontalAlignment="Left">
+                <Label.Content>
+                    <TextBlock>
+            <Run Text="Time Limit: "/>
+            <Run Text="{Binding TimeLimitInSeconds}" />
+            <Run Text=" seconds"/>
+                    </TextBlock>
+                </Label.Content>
+            </Label>
             <Slider Minimum="5"
             Maximum="120"
             Value="30"

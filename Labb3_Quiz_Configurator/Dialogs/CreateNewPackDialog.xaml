@@ -14,8 +14,15 @@
             <ComboBox SelectedItem="{Binding SelectedDifficulty}"
                       ItemsSource="{Binding DifficultyOptions}">
             </ComboBox>
-            <Label Content="Time Limit: {} seconds"
-                   HorizontalAlignment="Left"/>
+            <Label HorizontalAlignment="Left">
+                <Label.Content>
+                    <TextBlock>
+                        <Run Text="Time Limit: "/>
+                        <Run Text="{Binding TimeLimitInSeconds}" />
+                        <Run Text=" seconds"/>  
+                    </TextBlock>
+                </Label.Content>
+            </Label>
             <Slider Minimum="5"
                     Maximum="120"
                     Value="{Binding TimeLimitInSeconds}"
