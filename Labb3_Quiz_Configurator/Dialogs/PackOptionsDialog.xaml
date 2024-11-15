@@ -7,7 +7,7 @@
         xmlns:enums="clr-namespace:Labb3_Quiz_Configurator.Enums" 
         xmlns:converter="clr-namespace:Labb3_Quiz_Configurator.Converter"
         mc:Ignorable="d"
-        Title="PackOptionsDialog" Height="200" Width="200">
+        Title="PackOptionsDialog" Height="220" Width="200">
     <Window.Resources>
         <converter:DifficultyToIntConverter x:Key="DifficultyToIntConverter" />
     </Window.Resources>

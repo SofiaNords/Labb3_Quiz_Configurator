@@ -66,7 +66,7 @@
         <ListBox Grid.Row="1" 
                  Margin="10,0,10,10" 
                  Grid.RowSpan="2"
-                 ItemsSource="{Binding Questions}"
+                 ItemsSource="{Binding ActivePack.Questions}"
                  SelectedItem="{Binding SelectedQuestion, Mode=TwoWay}">
             <ListBox.ItemTemplate>
                 <DataTemplate>
@@ -86,7 +86,7 @@
             <TextBox VerticalAlignment="Stretch" 
                      Height="Auto" 
                      MinHeight="60"
-                     Text="{Binding NewQuestion.Query, UpdateSourceTrigger=PropertyChanged}"/>
+                     Text="{Binding SelectedQuestion.Query, UpdateSourceTrigger=PropertyChanged}"/>
         </StackPanel>
 
         <StackPanel Grid.Column="1"
@@ -94,13 +94,13 @@
                     Margin="10,0,10,0"
                     Visibility="{Binding IsQuestionInputVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
             <Label Content="Correct Answer:"/>
-            <TextBox Text="{Binding NewQuestion.CorrectAnswer, UpdateSourceTrigger=PropertyChanged}"/>
+            <TextBox Text="{Binding SelectedQuestion.CorrectAnswer, UpdateSourceTrigger=PropertyChanged}"/>
             <Label Content="First Incorrect Answer:"/>
-            <TextBox Text="{Binding NewQuestion.FirstIncorrectAnswer, UpdateSourceTrigger=PropertyChanged}"/>
+            <TextBox Text="{Binding SelectedQuestion.IncorrectAnswers[0], UpdateSourceTrigger=PropertyChanged}"/>
             <Label Content="Second Incorrect Answer:"/>
-            <TextBox Text="{Binding NewQuestion.SecondIncorrectAnswer, UpdateSourceTrigger=PropertyChanged}"/>
+            <TextBox Text="{Binding SelectedQuestion.IncorrectAnswers[1], UpdateSourceTrigger=PropertyChanged}"/>
             <Label Content="Third Incorrect Answer:"/>
-            <TextBox Text="{Binding NewQuestion.ThirdIncorrectAnswer, UpdateSourceTrigger=PropertyChanged}"/>
+            <TextBox Text="{Binding SelectedQuestion.IncorrectAnswers[2], UpdateSourceTrigger=PropertyChanged}"/>
         </StackPanel>
     </Grid>
 </UserControl>

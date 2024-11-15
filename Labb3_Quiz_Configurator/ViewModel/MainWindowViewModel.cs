@@ -12,15 +12,14 @@ namespace Labb3_Quiz_Configurator.ViewModel
     public class MainWindowViewModel : ViewModelBase
     {
         // Egenskap för att hålla aktuell vy (används för vyväxling).
-        private object currentView;
-        private QuestionPackViewModel parameter;
+        private object _currentView;
 
         public object CurrentView
         {
-            get => currentView;
+            get => _currentView;
             set
             {
-                currentView = value;
+                _currentView = value;
                 RaisePropertyChanged();
                 RaisePropertyChanged(nameof(IsEditEnabled)); // Uppdatera Edit-knappen
                 RaisePropertyChanged(nameof(IsPlayEnabled)); // Uppdatera Play-knappen
@@ -68,6 +67,7 @@ namespace Labb3_Quiz_Configurator.ViewModel
 
             // Kommandon för dialoger
             NewPackCommand = new DelegateCommand(OpenCreateNewPackDialog);
+            
             OpenPackCommand = new DelegateCommand(OpenPackOption);
 
             SelectQuestionPackCommand = new DelegateCommand(SelectQuestionPack);
