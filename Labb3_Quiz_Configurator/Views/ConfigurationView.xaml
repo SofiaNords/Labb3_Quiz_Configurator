@@ -26,7 +26,7 @@
             <RowDefinition Height="2*"/>
         </Grid.RowDefinitions>
 
-        <Label Content="{Binding ActivePackName}" Grid.Row="0" Margin="10,0,10,0"/>
+        <Label Content="{Binding ActivePack.Name}" Grid.Row="0" Margin="10,0,10,0"/>
 
         <StackPanel Orientation="Horizontal" 
                     HorizontalAlignment="Right" 

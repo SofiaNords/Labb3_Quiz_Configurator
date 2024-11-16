@@ -12,7 +12,7 @@ namespace Labb3_Quiz_Configurator.Dialogs
         public PackOptionsDialog(MainWindowViewModel mainWindowViewModel)
         {
             InitializeComponent();
-            this.DataContext = new ConfigurationViewModel(mainWindowViewModel); 
+            DataContext = (App.Current.MainWindow as MainWindow).DataContext;
         }
 
         public PackOptionsDialog(ConfigurationViewModel viewModel)

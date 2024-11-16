@@ -11,7 +11,7 @@ namespace Labb3_Quiz_Configurator.Dialogs
         public CreateNewPackDialog(MainWindowViewModel mainWindowViewModel)
         {
             InitializeComponent();
-            DataContext = new ConfigurationViewModel(mainWindowViewModel);
+            DataContext = mainWindowViewModel.ConfigurationViewModel;
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)

@@ -29,6 +29,7 @@
                     </ItemsControl>
                 </MenuItem>
                 <MenuItem Header="_Delete Question Pack"
+                          Command="{Binding ConfigurationViewModel.DeletePackCommand}"
                           Icon="{fa:Icon Trash}"/>
                 <Separator/>
                 <MenuItem Header="E_xit" 

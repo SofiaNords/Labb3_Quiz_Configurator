@@ -1,10 +1,7 @@
 ﻿using Labb3_Quiz_Configurator.Command;
 using Labb3_Quiz_Configurator.Dialogs;
 using Labb3_Quiz_Configurator.Model;
-using Labb3_Quiz_Configurator.Views;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Diagnostics;
 using System.Windows;
 
 namespace Labb3_Quiz_Configurator.ViewModel
@@ -12,89 +9,48 @@ namespace Labb3_Quiz_Configurator.ViewModel
     // ViewModel för konfigurationen av frågorna
     public class ConfigurationViewModel : ViewModelBase
     {
+        // Privata fält
         private readonly MainWindowViewModel mainWindowViewModel;
+        private QuestionPackViewModel? _activePack; 
+        private QuestionPackViewModel? _newPack; 
+        private Question _selectedQuestion; 
+        private bool _isQuestionInputVisible; 
 
-        // Privat variabel för att hålla det aktiva frågepaketet.
-        private QuestionPackViewModel? _activePack;
-
-        // Egenskap som representerar det aktiva frågepaketet
-        public QuestionPackViewModel? ActivePack
+        // Offentliga egenskaper
+        public QuestionPackViewModel? ActivePack // Egenskap som representerar det aktiva frågepaketet
         {
             get => _activePack;
             set
             {
                 _activePack = value;
                 RaisePropertyChanged(nameof(ActivePack)); // Signalera att ActivePack har ändrats.
-                RaisePropertyChanged(nameof(ActivePackName)); // Uppdatera ActivePackName.
-                Debug.WriteLine("ActivePack has been updated to: " + (_activePack?.Name ?? "null"));
             }
         }
-
-        // Egenskap som returnerar namnet på det aktiva frågepaketet eller ett standardnamn
-        //public string ActivePackName => ActivePack?.Name ?? "Default Name";
-        public string ActivePackName
+        public QuestionPackViewModel? NewPack // Egenskap som representerar det aktiva frågepaketet
         {
-            get
-            {
-                var packName = _activePack?.Name ?? "Default Question Pack";
-                Debug.WriteLine($"ActivePackName: {packName}");
-                return packName;
-            }
-        }
-
-        // Variabler för att lagra information om frågepaketet
-        private string packName;
-        private Difficulty selectedDifficulty;
-        private int timeLimitInSeconds;
-
-
-        // Egenskap för att hantera namn på frågepaketet
-        public string PackName
-        {
-            get => packName;
+            get => _newPack;
             set
             {
-                packName = value;
-                RaisePropertyChanged();
+                _newPack = value;
+                RaisePropertyChanged(nameof(NewPack)); // Signalera att ActivePack har ändrats.
             }
         }
-
-
-        // Egenskap för att välja svårighetsgrad
-        public Difficulty SelectedDifficulty
+        public ObservableCollection<Difficulty> DifficultyOptions { get; } // Samling av svårighetsalternativ
+        public DelegateCommand? CreatePackCommand { get; } // Kommandon för att skapa och hantera frågor
+        public DelegateCommand DeletePackCommand { get; } // Kommando för att kunna radera frågepaket
+        public DelegateCommand AddQuestionCommand { get; } // Kommandon för att lägga till rågor
+        public DelegateCommand RemoveQuestionCommand { get; } // Kommandon för att ta bort frågor
+        public bool IsQuestionInputVisible
         {
-            get => selectedDifficulty;
+            get => _isQuestionInputVisible;
             set
             {
-                selectedDifficulty = value;
-                RaisePropertyChanged();
+                _isQuestionInputVisible = value;
+                RaisePropertyChanged(); // Signalera att IsQuestionInputVisible har ändrats
             }
         }
+        public bool IsRemoveQuestionEnabled => SelectedQuestion != null; // Egenskap för att kontrollera om borttagningsknappen ska vara aktiverad
 
-        // Egenskap för att ställa in tidsgräns i sekunder
-        public int TimeLimitInSeconds
-        {
-            get => timeLimitInSeconds;
-            set
-            {
-                timeLimitInSeconds = value;
-                RaisePropertyChanged();
-            }
-        }
-
-        // Samling av svårighetsalternativ
-        public ObservableCollection<Difficulty> DifficultyOptions { get; }
-
-        // Kommandon för att skapa och hantera frågor
-        public DelegateCommand? CreatePackCommand { get; }
-
-
-        // Kommandon för att lägga till och ta bort frågor
-        public DelegateCommand AddQuestionCommand { get; }
-        public DelegateCommand RemoveQuestionCommand { get; }
-
-        // Privat variabel för den valda frågan
-        private Question _selectedQuestion;
         public Question SelectedQuestion
         {
             get => _selectedQuestion;
@@ -106,27 +62,27 @@ namespace Labb3_Quiz_Configurator.ViewModel
                 RaisePropertyChanged(nameof(IsRemoveQuestionEnabled)); // Uppdatera möjligheten att ta bort en fråga
             }
         }
-       
 
-        // Konstruktorn för ConfigurationViewModel
+        // Konstruktorn för ConfigurationViewModel som tar en parameter av typen MainWindowViewModel
+        // som används för att interagera med huvudfönstrets ViewModel
         public ConfigurationViewModel(MainWindowViewModel mainWindowViewModel)
         {
+            // this refererar till den aktuealla iunstansen av objektet, alltså det objekt som just nu är instansierat
+            // och som metoden eller konstruktorn tillhör
             this.mainWindowViewModel = mainWindowViewModel;
 
             CreatePackCommand = new DelegateCommand(CreatePack);
 
-            // Initiera ActivePack med ett nytt frågepaket
-            if (mainWindowViewModel.Packs.All(p => p.Name != "My Question Pack"))
-            {
-                var myPack = new Model.QuestionPack("My Question Pack");
-                ActivePack = new QuestionPackViewModel(myPack);
-                mainWindowViewModel.Packs.Add(ActivePack);
-            }
+            DeletePackCommand = new DelegateCommand(DeletePack);
 
-            // Ställ in defaultvärden för PackName, SelectedDifficulty och TimeLimitInSeconds
-            PackName = "Default Pack Name";
-            SelectedDifficulty = Difficulty.Medium; // Sätt standard svårighetsgrad
-            TimeLimitInSeconds = 30; // Sätt standard tidsbegränsning
+            // Skapa ett nytt frågepaket med namnet "Default Question Pack"
+            var myPack = new Model.QuestionPack("Default Question Pack");
+
+            // Sätt det nyskapade frågepaketet som ActivePack
+            ActivePack = new QuestionPackViewModel(myPack);
+
+            // Lägg till det nya frågepaketet i listan över frågepaket
+            mainWindowViewModel.Packs.Add(ActivePack);
 
             // Intitiera DifficultyOptions....
             DifficultyOptions = new ObservableCollection<Difficulty>((Difficulty[])Enum.GetValues(typeof(Difficulty)));
@@ -135,32 +91,17 @@ namespace Labb3_Quiz_Configurator.ViewModel
             AddQuestionCommand = new DelegateCommand(AddQuestion);
             RemoveQuestionCommand = new DelegateCommand(RemoveQuestion);
 
-            //LoadQuestionsFromActivePack(); // Ladda frågor från det aktiva frågepaketet
             IsQuestionInputVisible = false; // Dölja inmatningsfält initialt
         }
 
         // Metod för att skapa frågepaket
         private void CreatePack(object obj)
         {   
-            // Kontrollera att mainWindowViewModel inte är null
-            if (mainWindowViewModel == null)
-            {
-                MessageBox.Show("Det gick inte att skapa ett nytt frågepaket. Vänligen försök igen senare", "Fel", MessageBoxButton.OK, MessageBoxImage.Error);
-                return; // Avbryt operationen
-            }
-
-            // Skapa ett nytt QuestionPack
-            var newPack = new QuestionPack(PackName, SelectedDifficulty, TimeLimitInSeconds);
-
-            // Skapa en QuestionPackViewModel från QuestionPack
-            var newPackViewModel = new QuestionPackViewModel(newPack);
-
             // Lägg till den nya QuestionPackViewModel till listan av paket
-            mainWindowViewModel.Packs.Add(newPackViewModel);
-            var debucheck = "debug";
+            mainWindowViewModel.Packs.Add(NewPack);
 
             // Sätt det nya paketet som aktivt
-            ActivePack = newPackViewModel;
+            ActivePack = NewPack;
 
             // Stäng dialogen
             if (Application.Current.Windows.OfType<CreateNewPackDialog>().Any())
@@ -168,6 +109,29 @@ namespace Labb3_Quiz_Configurator.ViewModel
                 Application.Current.Windows.OfType<CreateNewPackDialog>().First().Close();
             }
         }
+
+        // Metod för att radera frågepaket
+        private void DeletePack(object obj)
+        {
+            if (ActivePack != null)
+            {
+                mainWindowViewModel.Packs.Remove(ActivePack);
+
+                ActivePack = null;
+            }
+        }
+
+
+        // Metod för att lägga till en ny fråga
+        private void AddQuestion(object obj)
+        {
+            var newQuestionToAdd = new Question("", "", "", "", "");
+
+            ActivePack.Questions.Add(newQuestionToAdd); // Lägg till den nya frågan i Questions
+
+            SelectedQuestion = newQuestionToAdd; // Sätt den nya frågan som vald
+        }
+
 
         // Metod för att ta bort en vald fråga
         private void RemoveQuestion(object obj)
@@ -180,33 +144,8 @@ namespace Labb3_Quiz_Configurator.ViewModel
             }
         }
 
-        // Privat variabel för att hantera visibiliteten av inmatningsfältet
-        private bool isQuestionInputVisible;
-        public bool IsQuestionInputVisible
-        {
-            get => isQuestionInputVisible;
-            set
-            {
-                isQuestionInputVisible = value;
-                RaisePropertyChanged(); // Signalera att IsQuestionInputVisible har ändrats
-            }
-        }
 
-        // Metod för att lägga till en ny fråga
-        private void AddQuestion(object obj)
-        {
-            var newQuestionToAdd = new Question("", "", "", "", "");
-
-            ActivePack.Questions.Add(newQuestionToAdd); // Lägg till den nya frågan i Questions
-            
-            SelectedQuestion = newQuestionToAdd; // Sätt den nya frågan som vald
-        }
-
-        // Egenskap för att kontrollera om borttagningsknappen ska vara aktiverad
-        public bool IsRemoveQuestionEnabled => SelectedQuestion != null;
-
-
-        // Kommandon för att öppna frågepaket, hämtas från huvud-ViewModel
+        // TODO: Kommandon för att öppna frågepaket, hämtas från huvud-ViewModel. Se över om vi kan ta bort denna då den verkar överflödig. Blir dock Binding Error om jag tar bort den nu.
         public DelegateCommand OpenPackCommand => mainWindowViewModel.OpenPackCommand;
     }
 }

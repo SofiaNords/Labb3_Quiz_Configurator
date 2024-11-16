@@ -11,10 +11,12 @@ namespace Labb3_Quiz_Configurator.ViewModel
     // Huvud-ViewModel för applikationens huvudfönster.
     public class MainWindowViewModel : ViewModelBase
     {
-        // Egenskap för att hålla aktuell vy (används för vyväxling).
+        // Privata fält
         private object _currentView;
+        private bool _isFullScreen;
 
-        public object CurrentView
+        // Egenskaper
+        public object CurrentView // Egenskap för att hålla aktuell vy (används för vyväxling).
         {
             get => _currentView;
             set
@@ -25,21 +27,12 @@ namespace Labb3_Quiz_Configurator.ViewModel
                 RaisePropertyChanged(nameof(IsPlayEnabled)); // Uppdatera Play-knappen
             }
         }
-        // Egenskap för att kontrollera om Edit-knappen ska vara aktiv.
-        public bool IsEditEnabled => CurrentView is not ConfigurationView;
-
-        // Egenskap för att kontroller om Play-knappen ska vara aktiv.
-        public bool IsPlayEnabled => CurrentView is not PlayerView;
-
-        // ObservableCollection som håller en lista av frågepaket.
-        public ObservableCollection<QuestionPackViewModel> Packs { get; set; }
-
-        // ViewModels för de olika vyerna.
         public ConfigurationViewModel ConfigurationViewModel { get; }
         public PlayerViewModel PlayerViewModel { get; }
-
-        private bool _isFullScreen;
-
+        public ObservableCollection<QuestionPackViewModel> Packs { get; set; } // ObservableCollection som håller en lista av frågepaket.
+        public bool IsEditEnabled => CurrentView is not ConfigurationView; // Egenskap för att kontrollera om Edit-knappen ska vara aktiv.
+        public bool IsPlayEnabled => CurrentView is not PlayerView; // Egenskap för att kontroller om Play-knappen ska vara aktiv.
+       
         // Kommandon för olika åtgärder.
         public DelegateCommand NewPackCommand { get; }
         public DelegateCommand OpenPackCommand { get; }
@@ -129,6 +122,7 @@ namespace Labb3_Quiz_Configurator.ViewModel
         // Öppna dialog för att skapa ett nytt frågepaket
         private void OpenCreateNewPackDialog(object obj)
         {
+            ConfigurationViewModel.NewPack = new QuestionPackViewModel(new QuestionPack("<Packname>"));
             var dialog = new CreateNewPackDialog(this);
             dialog.ShowDialog();
         }

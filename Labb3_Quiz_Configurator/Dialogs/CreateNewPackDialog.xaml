@@ -9,23 +9,23 @@
     <Grid>
         <StackPanel Margin="10,10,10,10">
             <Label Content="Pack Name:"/>
-            <TextBox Text="{Binding PackName, UpdateSourceTrigger=PropertyChanged}"/>
+            <TextBox Text="{Binding NewPack.Name, UpdateSourceTrigger=PropertyChanged}"/>
             <Label Content="Difficulty:"/>
-            <ComboBox SelectedItem="{Binding SelectedDifficulty}"
+            <ComboBox SelectedItem="{Binding NewPack.Difficulty}"
                       ItemsSource="{Binding DifficultyOptions}">
             </ComboBox>
             <Label HorizontalAlignment="Left">
                 <Label.Content>
                     <TextBlock>
                         <Run Text="Time Limit: "/>
-                        <Run Text="{Binding TimeLimitInSeconds}" />
+                        <Run Text="{Binding NewPack.TimeLimitInSeconds}" />
                         <Run Text=" seconds"/>  
                     </TextBlock>
                 </Label.Content>
             </Label>
             <Slider Minimum="5"
                     Maximum="120"
-                    Value="{Binding TimeLimitInSeconds}"
+                    Value="{Binding NewPack.TimeLimitInSeconds}"
                     TickFrequency="5"
                     TickPlacement="BottomRight"
                     />
