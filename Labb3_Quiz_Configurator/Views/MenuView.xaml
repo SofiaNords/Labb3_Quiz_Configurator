@@ -13,10 +13,10 @@
             <MenuItem Header="_File">
                 <MenuItem Header="_New Question Pack"
                           Command="{Binding NewPackCommand}"
-                          Icon="{fa:Icon FolderOpen}"
+                          Icon="{fa:Icon FolderPlus}"
                           />
                 <MenuItem Header="_Select Question Pack"
-                          Icon="{fa:Icon SquareCheck}">
+                          Icon="{fa:Icon FolderOpen}">
                     <ItemsControl ItemsSource="{Binding Packs}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>

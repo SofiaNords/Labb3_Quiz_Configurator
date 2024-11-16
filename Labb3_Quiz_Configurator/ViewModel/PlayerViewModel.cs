@@ -13,7 +13,9 @@ namespace Labb3_Quiz_Configurator.ViewModel
         private DispatcherTimer timer;
         private string _testData;
 
-        private string _question = "Här är testfrågan på en privat sträng";
+        private string _question;
+
+        private QuestionPackViewModel? _activePack; // Det valda frågepaketet
 
         // En egenskap som returnerar testdata som en sträng
         public string TestData { 
@@ -55,6 +57,16 @@ namespace Labb3_Quiz_Configurator.ViewModel
 
             UpdateButtonCommand = new DelegateCommand(UpdateButton, CanUpdateButton);
             AddQuestionCommand = new DelegateCommand(AddQuestion, CanAddQuestion);
+        }
+
+        // Sätt det aktiva frågepaketet och visa den första frågan
+        public void SetActivePack(QuestionPackViewModel? pack)
+        {
+            if (pack != null && pack.Questions.Any()) // Kontrollera om det finns frågor i paketet
+            {
+                _activePack = pack;
+                Question = _activePack.Questions.First().Query; // Visa den första frågan
+            }
         }
 
         private bool CanAddQuestion(object? arg)

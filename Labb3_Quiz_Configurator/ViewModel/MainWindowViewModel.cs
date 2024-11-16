@@ -104,6 +104,7 @@ namespace Labb3_Quiz_Configurator.ViewModel
         // Metoder för att växla vyer
         private void SwitchToPlayerView(object obj)
         {
+            PlayerViewModel.SetActivePack(ConfigurationViewModel.ActivePack); // Skicka det aktuella frågepaketet till PlayerViewModel
             CurrentView = new PlayerView(); // Skapa en instans av PlayerView
         }
 
