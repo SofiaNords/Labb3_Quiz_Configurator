@@ -16,10 +16,8 @@
             <Label Content="Pack Name:"/>
             <TextBox Text="{Binding ActivePack.Name, UpdateSourceTrigger=PropertyChanged}"/>
             <Label Content="Difficulty:"/>
-            <ComboBox SelectedValue="{Binding ActivePack.Difficulty, Converter={StaticResource DifficultyToIntConverter}}">
-                <ComboBoxItem Content="Easy" Tag="{x:Static enums:Difficulty.Easy}" />
-                <ComboBoxItem Content="Medium" Tag="{x:Static enums:Difficulty.Medium}" />
-                <ComboBoxItem Content="Hard" Tag="{x:Static enums:Difficulty.Hard}" />
+            <ComboBox SelectedValue="{Binding ActivePack.Difficulty}"
+                      ItemsSource="{Binding DifficultyOptions}">
             </ComboBox>
             <Label HorizontalAlignment="Left">
                 <Label.Content>
@@ -32,7 +30,7 @@
             </Label>
             <Slider Minimum="5"
             Maximum="120"
-            Value="30"
+            Value="{Binding ActivePack.TimeLimitInSeconds}"
             TickFrequency="5"
             TickPlacement="BottomRight"
             />

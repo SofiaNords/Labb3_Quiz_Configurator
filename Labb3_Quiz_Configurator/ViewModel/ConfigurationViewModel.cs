@@ -125,7 +125,7 @@ namespace Labb3_Quiz_Configurator.ViewModel
         // Metod för att lägga till en ny fråga
         private void AddQuestion(object obj)
         {
-            var newQuestionToAdd = new Question("", "", "", "", "");
+            var newQuestionToAdd = new Question("New Question", "", "", "", "");
 
             ActivePack.Questions.Add(newQuestionToAdd); // Lägg till den nya frågan i Questions
 
