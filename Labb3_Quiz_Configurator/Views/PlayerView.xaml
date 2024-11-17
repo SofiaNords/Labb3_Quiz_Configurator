@@ -87,11 +87,17 @@
                 <Button Height="80" 
                         Width="200" 
                         Margin="0,0,10,10"
-                        Content="{Binding AnswerOne}"/>
+                        Content="{Binding AnswerOne}"
+                        Background="{Binding AnswerOneColor}"
+                        Command="{Binding AnswerCommand}"
+                        CommandParameter="{Binding AnswerOne}"/>
                 <Button Height="80" 
                         Width="200" 
                         Margin="0,0,10,10"
-                        Content="{Binding AnswerTwo}"/>
+                        Content="{Binding AnswerTwo}"
+                        Background="{Binding AnswerTwoColor}"
+                        Command="{Binding AnswerCommand}"
+                        CommandParameter="{Binding AnswerTwo}"/>
 
             </StackPanel>
 
@@ -99,11 +105,17 @@
                 <Button Height="80" 
                         Width="200" 
                         Margin="0,0,10,0"
-                        Content="{Binding AnswerThree}"/>
+                        Content="{Binding AnswerThree}"
+                        Background="{Binding AnswerThreeColor}"
+                        Command="{Binding AnswerCommand}"
+                        CommandParameter="{Binding AnswerThree}"/>
                 <Button Height="80" 
                         Width="200" 
                         Margin="0,0,10,0"
-                        Content="{Binding AnswerFour}"/>
+                        Content="{Binding AnswerFour}"
+                        Background="{Binding AnswerFourColor}"
+                        Command="{Binding AnswerCommand}"
+                        CommandParameter="{Binding AnswerFour}"/>
             </StackPanel>
 
         </StackPanel>
