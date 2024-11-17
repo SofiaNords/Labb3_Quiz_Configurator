@@ -5,10 +5,14 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Labb3_Quiz_Configurator.Views" 
              xmlns:viewmodel="clr-namespace:Labb3_Quiz_Configurator.ViewModel"
+             xmlns:converter="clr-namespace:Labb3_Quiz_Configurator.Converter"
              d:DataContext="{d:DesignInstance Type=viewmodel:PlayerViewModel}"
              DataContext="{Binding PlayerViewModel}" 
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <converter:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+    </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="2*"/>
@@ -39,21 +43,46 @@
                    HorizontalAlignment="Stretch"
                    TextAlignment="Center"
                    Text="{Binding Question}"
+                   Visibility="{Binding QuizIsRunning, Converter={StaticResource BooleanToVisibilityConverter}}"
                    />
+
+        <TextBlock TextWrapping="Wrap" 
+                   Grid.Row="0" 
+                   Grid.Column="1" 
+                   FontSize="30" 
+                   Width="500"
+                   VerticalAlignment="Bottom" 
+                   HorizontalAlignment="Stretch"
+                   TextAlignment="Center"
+                   Text="{Binding ResultMessage}" 
+                   Visibility="{Binding QuizIsOver, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+        
+        <Button Content="Restart"
+                Grid.Row="1"
+                Grid.Column="1"
+                Command="{Binding RestartQuizCommand}" 
+                VerticalAlignment="Center"
+                HorizontalAlignment="Center"
+                Height="50"
+                Width="200"
+                Visibility="{Binding QuizIsOver, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+
 
         <TextBlock Text="{Binding TimeRemaining}" 
                    FontSize="24" 
                    HorizontalAlignment="Center" 
                    VerticalAlignment="Top"
                    Grid.Row="0"
-                   Grid.Column="2"/>
+                   Grid.Column="2"
+                   Visibility="{Binding QuizIsRunning, Converter={StaticResource BooleanToVisibilityConverter}}"/>
 
 
         <StackPanel VerticalAlignment="Center" 
                     HorizontalAlignment="Center" 
                     Grid.Row="1" 
                     Grid.RowSpan="2"
-                    Grid.Column="1">
+                    Grid.Column="1"
+                    Visibility="{Binding QuizIsRunning, Converter={StaticResource BooleanToVisibilityConverter}}">
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
                 <Button Height="80" 
                         Width="200" 
