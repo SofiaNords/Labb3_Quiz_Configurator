@@ -325,25 +325,79 @@ namespace Labb3_Quiz_Configurator.ViewModel
         // Metod för att hantera klick på svar
         public void CheckAnswer(string selectedAnswer)
         {
+            // Färger för alla knapptryckningar
+            string correctColor = "Green";
+            string incorrectColor = "Red";
+
+            // Kontrollera om det valda svaret är korrekt
             if (selectedAnswer == _activePack.Questions[_currentQuestionIndex].CorrectAnswer)
             {
-                // Rätt svar
                 _correctAnswers++; // Öka antalet korrekta svar
-                // Grönt för rätt svar
-                AnswerOneColor = selectedAnswer == AnswerOne ? "Green" : AnswerOneColor;
-                AnswerTwoColor = selectedAnswer == AnswerTwo ? "Green" : AnswerTwoColor;
-                AnswerThreeColor = selectedAnswer == AnswerThree ? "Green" : AnswerThreeColor;
-                AnswerFourColor = selectedAnswer == AnswerFour ? "Green" : AnswerFourColor;
+
+                // Endast den valda knappen sätts till grönt om rätt svar
+                if (selectedAnswer == AnswerOne)
+                {
+                    AnswerOneColor = correctColor;
+                }
+                else if (selectedAnswer == AnswerTwo)
+                {
+                    AnswerTwoColor = correctColor;
+                }
+                else if (selectedAnswer == AnswerThree)
+                {
+                    AnswerThreeColor = correctColor;
+                }
+                else if (selectedAnswer == AnswerFour)
+                {
+                    AnswerFourColor = correctColor;
+                }
             }
             else
             {
-                // Röd för fel svar, grön för rätt svar
-                AnswerOneColor = AnswerOne == _activePack.Questions[_currentQuestionIndex].CorrectAnswer ? "Green" : "Red";
-                AnswerTwoColor = AnswerTwo == _activePack.Questions[_currentQuestionIndex].CorrectAnswer ? "Green" : "Red";
-                AnswerThreeColor = AnswerThree == _activePack.Questions[_currentQuestionIndex].CorrectAnswer ? "Green" : "Red";
-                AnswerFourColor = AnswerFour == _activePack.Questions[_currentQuestionIndex].CorrectAnswer ? "Green" : "Red";
+                // Om svaret är fel, sätt den felaktiga knappen till röd
+                if (selectedAnswer == AnswerOne)
+                {
+                    AnswerOneColor = incorrectColor;
+                }
+                else if (selectedAnswer == AnswerTwo)
+                {
+                    AnswerTwoColor = incorrectColor;
+                }
+                else if (selectedAnswer == AnswerThree)
+                {
+                    AnswerThreeColor = incorrectColor;
+                }
+                else if (selectedAnswer == AnswerFour)
+                {
+                    AnswerFourColor = incorrectColor;
+                }
+
+                // Sätt den rätta knappen till grön
+                if (AnswerOne == _activePack.Questions[_currentQuestionIndex].CorrectAnswer)
+                {
+                    AnswerOneColor = correctColor;
+                }
+                else if (AnswerTwo == _activePack.Questions[_currentQuestionIndex].CorrectAnswer)
+                {
+                    AnswerTwoColor = correctColor;
+                }
+                else if (AnswerThree == _activePack.Questions[_currentQuestionIndex].CorrectAnswer)
+                {
+                    AnswerThreeColor = correctColor;
+                }
+                else if (AnswerFour == _activePack.Questions[_currentQuestionIndex].CorrectAnswer)
+                {
+                    AnswerFourColor = correctColor;
+                }
             }
+
+            // Uppdatera visningen av färger
+            RaisePropertyChanged(nameof(AnswerOneColor));
+            RaisePropertyChanged(nameof(AnswerTwoColor));
+            RaisePropertyChanged(nameof(AnswerThreeColor));
+            RaisePropertyChanged(nameof(AnswerFourColor));
         }
+
 
 
         private bool CanAddQuestion(object? arg)
