@@ -8,10 +8,11 @@ namespace Labb3_Quiz_Configurator.ViewModel
     public class PlayerViewModel : ViewModelBase
     {
         // En privat variabel för att hålla en referens till MainWindowViewModel.
-        private readonly MainWindowViewModel? mainWindowViewModel;
-        private DispatcherTimer timer;
+        private readonly MainWindowViewModel? _mainWindowViewModel;
+        private DispatcherTimer _timer;
+        private int _remainingTime;
         private string _testData;
-        private string _question;
+        private string _question; 
         private string _answerOne;
         private string _answerTwo;
         private string _answerThree;
@@ -77,6 +78,8 @@ namespace Labb3_Quiz_Configurator.ViewModel
             }
         }
 
+        public string TimeRemaining { get; private set; } = "00:00";
+
         public DelegateCommand UpdateButtonCommand { get; } // Add Question command, Remo
 
         public DelegateCommand AddQuestionCommand { get; }
@@ -86,13 +89,13 @@ namespace Labb3_Quiz_Configurator.ViewModel
         public PlayerViewModel(MainWindowViewModel? mainWindowViewModel)
         {
             // Tilldelar den inkommande MainWindowViewModel till den privata variabeln.
-            this.mainWindowViewModel = mainWindowViewModel;
+            this._mainWindowViewModel = mainWindowViewModel;
 
             TestData = "Start value: ";
 
-            timer = new DispatcherTimer();
-            timer.Interval = TimeSpan.FromSeconds(1);
-            timer.Tick += Timer_Tick;
+            _timer = new DispatcherTimer();
+            _timer.Interval = TimeSpan.FromSeconds(1);
+            _timer.Tick += Timer_Tick;
             //timer.Start();
 
             UpdateButtonCommand = new DelegateCommand(UpdateButton, CanUpdateButton);
@@ -119,9 +122,52 @@ namespace Labb3_Quiz_Configurator.ViewModel
                 AnswerTwo = shuffledAnswers[1];
                 AnswerThree = shuffledAnswers[2];
                 AnswerFour = shuffledAnswers[3];
+
+                StartTimer(_activePack.TimeLimitInSeconds);
             }
         }
 
+        private void StartTimer(int timeLimitInSeconds)
+        {
+            _remainingTime = timeLimitInSeconds;
+            UpdateTimeDisplay();
+            _timer.Start(); // Starta timern
+        }
+
+        private void UpdateTimeDisplay()
+        {
+            TimeRemaining = $"{_remainingTime / 60}:{_remainingTime % 60}";
+            RaisePropertyChanged(nameof(TimeRemaining));
+        }
+
+        private void Timer_Tick(object? sender, EventArgs e)
+        {
+            if (_remainingTime > 0)
+            {
+                _remainingTime--;
+                UpdateTimeDisplay();
+            }
+            else
+            {
+                _timer.Stop();
+                //MoveToNextQuestion(); // Byt till nästa fråga när tiden är slut
+            }
+        }
+
+        // Byt till nästa fråga
+        //private void MoveToNextQuestion()
+        //{
+        //    // Här kan du logik för att byta till nästa fråga i frågepaketet
+        //    // Till exempel kan du hålla reda på vilket index av frågorna du är på:
+        //    // Om du har fler frågor i paketet, kan du sätta nästa fråga här.
+
+        //    // Exempel på hur du kan iterera genom frågor:
+        //    var nextQuestion = _activePack?.Questions.Skip(1).FirstOrDefault();
+        //    if (nextQuestion != null)
+        //    {
+        //        SetActivePack(new QuestionPackViewModel { Questions = new List<QuestionViewModel> { nextQuestion } });
+        //    }
+        //}
         private bool CanAddQuestion(object? arg)
         {
             return true; // Sätt ett villkor om den ska gå att köra eller inte
@@ -142,9 +188,5 @@ namespace Labb3_Quiz_Configurator.ViewModel
             TestData += "x";
         }
 
-        private void Timer_Tick(object? sender, EventArgs e)
-        {
-            TestData += "x";
-        }
     }
 }

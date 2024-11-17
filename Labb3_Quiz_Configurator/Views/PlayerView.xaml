@@ -16,6 +16,12 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="3*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
         <!--<Button Grid.Column="1"
                 VerticalAlignment="Center"
                 HorizontalAlignment="Center"
@@ -35,7 +41,19 @@
                    Text="{Binding Question}"
                    />
 
-        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Row="1" Grid.RowSpan="2">
+        <TextBlock Text="{Binding TimeRemaining}" 
+                   FontSize="24" 
+                   HorizontalAlignment="Center" 
+                   VerticalAlignment="Top"
+                   Grid.Row="0"
+                   Grid.Column="2"/>
+
+
+        <StackPanel VerticalAlignment="Center" 
+                    HorizontalAlignment="Center" 
+                    Grid.Row="1" 
+                    Grid.RowSpan="2"
+                    Grid.Column="1">
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
                 <Button Height="80" 
                         Width="200" 
