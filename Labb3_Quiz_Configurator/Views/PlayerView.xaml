@@ -37,14 +37,26 @@
 
         <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Row="1" Grid.RowSpan="2">
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
-                <Button Height="80" Width="200" Margin="0,0,10,10"/>
-                <Button Height="80" Width="200" Margin="0,0,10,10"/>
+                <Button Height="80" 
+                        Width="200" 
+                        Margin="0,0,10,10"
+                        Content="{Binding AnswerOne}"/>
+                <Button Height="80" 
+                        Width="200" 
+                        Margin="0,0,10,10"
+                        Content="{Binding AnswerTwo}"/>
 
             </StackPanel>
 
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
-                <Button Height="80" Width="200" Margin="0,0,10,0"/>
-                <Button Height="80" Width="200" Margin="0,0,10,0"/>
+                <Button Height="80" 
+                        Width="200" 
+                        Margin="0,0,10,0"
+                        Content="{Binding AnswerThree}"/>
+                <Button Height="80" 
+                        Width="200" 
+                        Margin="0,0,10,0"
+                        Content="{Binding AnswerFour}"/>
             </StackPanel>
 
         </StackPanel>
