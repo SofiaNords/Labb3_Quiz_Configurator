@@ -7,10 +7,13 @@ namespace Labb3_Quiz_Configurator.ViewModel
     // ViewModel för spelvyn. Hanterar logik relaterad till spelarsessioen.
     public class PlayerViewModel : ViewModelBase
     {
-        // En privat variabel för att hålla en referens till MainWindowViewModel.
+        // Privata fält
         private readonly MainWindowViewModel? _mainWindowViewModel;
         private DispatcherTimer _timer;
         private int _remainingTime;
+        private int _currentQuestionIndex = 0; // Håll reda på vilken fråga vi är på
+        private int _correctAnswers = 0; // Håller reda på antalet rätta svar
+        private int _totalQuestions = 0; // Totalt antal frågor i quizet
         private string _testData;
         private string _question; 
         private string _answerOne;
@@ -79,6 +82,12 @@ namespace Labb3_Quiz_Configurator.ViewModel
         }
 
         public string TimeRemaining { get; private set; } = "00:00";
+        public string ResultMessage { get; private set; } = string.Empty;
+        public bool QuizIsOver { get; private set; } = false;
+
+        public bool QuizIsRunning { get; private set; } = false;
+
+        public DelegateCommand RestartQuizCommand { get; }
 
         public DelegateCommand UpdateButtonCommand { get; } // Add Question command, Remo
 
@@ -91,13 +100,15 @@ namespace Labb3_Quiz_Configurator.ViewModel
             // Tilldelar den inkommande MainWindowViewModel till den privata variabeln.
             this._mainWindowViewModel = mainWindowViewModel;
 
+            QuizIsRunning = true;
+
             TestData = "Start value: ";
 
             _timer = new DispatcherTimer();
             _timer.Interval = TimeSpan.FromSeconds(1);
             _timer.Tick += Timer_Tick;
-            //timer.Start();
 
+            RestartQuizCommand = new DelegateCommand(RestartQuiz, CanRestartQuiz);
             UpdateButtonCommand = new DelegateCommand(UpdateButton, CanUpdateButton);
             AddQuestionCommand = new DelegateCommand(AddQuestion, CanAddQuestion);
         }
@@ -108,24 +119,39 @@ namespace Labb3_Quiz_Configurator.ViewModel
             if (pack != null && pack.Questions.Any()) // Kontrollera om det finns frågor i paketet
             {
                 _activePack = pack;
-                var firstQuestion = _activePack.Questions.First();
 
-                var answers = new List<string> { firstQuestion.CorrectAnswer };
-                answers.AddRange(firstQuestion.IncorrectAnswers.Take(3));
+                // Hämta och visa den första frågan
+                ShowQuestion(_currentQuestionIndex);
 
-                var random = new Random();
-                var shuffledAnswers = answers.OrderBy(a => random.Next()).ToList();
-
-
-                Question = firstQuestion.Query;
-                AnswerOne = shuffledAnswers[0];
-                AnswerTwo = shuffledAnswers[1];
-                AnswerThree = shuffledAnswers[2];
-                AnswerFour = shuffledAnswers[3];
-
+                // Starta timer för första frågan
                 StartTimer(_activePack.TimeLimitInSeconds);
             }
         }
+
+        private void ShowQuestion(int questionIndex)
+        {
+            if (_activePack == null || _activePack.Questions.Count <= questionIndex)
+            {
+                return; // Om det inte finns någon fråga på det här indexet, gör inget
+            }
+
+            var question = _activePack.Questions[questionIndex];
+            var answers = new List<string> { question.CorrectAnswer };
+            answers.AddRange(question.IncorrectAnswers.Take(3));
+
+            var random = new Random();
+            var shuffledAnswers = answers.OrderBy(a => random.Next()).ToList();
+
+            Question = question.Query;
+            AnswerOne = shuffledAnswers[0];
+            AnswerTwo = shuffledAnswers[1];
+            AnswerThree = shuffledAnswers[2];
+            AnswerFour = shuffledAnswers[3];
+
+            // Om det finns fler frågor, börja om timern
+            StartTimer(_activePack.TimeLimitInSeconds);
+        }
+
 
         private void StartTimer(int timeLimitInSeconds)
         {
@@ -136,7 +162,7 @@ namespace Labb3_Quiz_Configurator.ViewModel
 
         private void UpdateTimeDisplay()
         {
-            TimeRemaining = $"{_remainingTime / 60}:{_remainingTime % 60}";
+            TimeRemaining = $"{_remainingTime / 60:D2}:{_remainingTime % 60:D2}";
             RaisePropertyChanged(nameof(TimeRemaining));
         }
 
@@ -150,24 +176,75 @@ namespace Labb3_Quiz_Configurator.ViewModel
             else
             {
                 _timer.Stop();
-                //MoveToNextQuestion(); // Byt till nästa fråga när tiden är slut
+                MoveToNextQuestion(); // Byt till nästa fråga när tiden är slut
             }
         }
 
-        // Byt till nästa fråga
-        //private void MoveToNextQuestion()
-        //{
-        //    // Här kan du logik för att byta till nästa fråga i frågepaketet
-        //    // Till exempel kan du hålla reda på vilket index av frågorna du är på:
-        //    // Om du har fler frågor i paketet, kan du sätta nästa fråga här.
+        //Byt till nästa fråga
+        private void MoveToNextQuestion()
+        {
+            _currentQuestionIndex++;
 
-        //    // Exempel på hur du kan iterera genom frågor:
-        //    var nextQuestion = _activePack?.Questions.Skip(1).FirstOrDefault();
-        //    if (nextQuestion != null)
-        //    {
-        //        SetActivePack(new QuestionPackViewModel { Questions = new List<QuestionViewModel> { nextQuestion } });
-        //    }
-        //}
+            if (_activePack != null && _activePack.Questions.Count > _currentQuestionIndex)
+            {
+                // Visa nästa fråga om det finns fler frågor
+                ShowQuestion(_currentQuestionIndex);
+            }
+            else
+            {
+                // Om det inte finns fler frågor, avsluta spelet eller återgå till huvudmenyn.
+                EndQuiz();
+            }
+        }
+
+        private void EndQuiz()
+        {
+            ResultMessage = $"Quizet är slut! Du fick {_correctAnswers} av {_totalQuestions} rätt!";
+            QuizIsRunning = false;
+            QuizIsOver = true;
+            RaisePropertyChanged(nameof(ResultMessage));
+            RaisePropertyChanged(nameof(QuizIsOver));
+            RaisePropertyChanged(nameof(QuizIsRunning));
+        }
+
+        // Nollställ quizets tillstånd
+        private void ResetQuiz()
+        {
+            _currentQuestionIndex = 0;  // Nollställ frågaindex
+            _remainingTime = 0;          // Återställ timer
+            TimeRemaining = "00:00";     // Återställ tiddisplay
+
+            Question = string.Empty;
+            AnswerOne = string.Empty;
+            AnswerTwo = string.Empty;
+            AnswerThree = string.Empty;
+            AnswerFour = string.Empty;
+            ResultMessage = string.Empty;
+            QuizIsOver = false;
+
+            RaisePropertyChanged(nameof(TimeRemaining));
+            RaisePropertyChanged(nameof(Question));
+            RaisePropertyChanged(nameof(AnswerOne));
+            RaisePropertyChanged(nameof(AnswerTwo));
+            RaisePropertyChanged(nameof(AnswerThree));
+            RaisePropertyChanged(nameof(AnswerFour));
+            RaisePropertyChanged(nameof(ResultMessage));
+            RaisePropertyChanged(nameof(QuizIsOver));
+        }
+
+        // Återstarta quizet
+        private void RestartQuiz(object obj)
+        {
+            ResetQuiz();
+            // Återgå till att välja ett nytt frågepaket eller börja ett nytt quiz
+            TestData = "Start value: ";
+        }
+
+        private bool CanRestartQuiz(object obj)
+        {
+            return QuizIsOver; // Endast möjlig att klicka på om quizet är slut
+        }
+
         private bool CanAddQuestion(object? arg)
         {
             return true; // Sätt ett villkor om den ska gå att köra eller inte
