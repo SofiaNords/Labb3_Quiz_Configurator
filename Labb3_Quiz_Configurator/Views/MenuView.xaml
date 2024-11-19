@@ -34,7 +34,8 @@
                 <Separator/>
                 <MenuItem Header="E_xit" 
                           InputGestureText="Alt+F4"
-                          Icon="{fa:Icon DoorOpen}"/>
+                          Icon="{fa:Icon DoorOpen}"
+                          Command="{Binding ExitCommand}"/>
             </MenuItem>
             <MenuItem Header="_Edit">
                 <MenuItem Header="_Add Question"

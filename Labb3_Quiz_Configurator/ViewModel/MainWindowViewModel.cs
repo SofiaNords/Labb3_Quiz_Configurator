@@ -36,6 +36,7 @@ namespace Labb3_Quiz_Configurator.ViewModel
         public DelegateCommand SwitchToPlayerViewCommand { get; }
         public DelegateCommand SwitchToConfigurationViewCommand { get; }
         public DelegateCommand FullScreenCommand { get; }
+        public DelegateCommand ExitCommand { get; }
 
         public MainWindowViewModel()
         {
@@ -57,6 +58,7 @@ namespace Labb3_Quiz_Configurator.ViewModel
 
             FullScreenCommand = new DelegateCommand(_ => ToggleFullScreen());
 
+            ExitCommand = new DelegateCommand(ExitApplication);
         }
 
         public void ToggleFullScreen()
@@ -113,6 +115,10 @@ namespace Labb3_Quiz_Configurator.ViewModel
             ConfigurationViewModel.NewPack = new QuestionPackViewModel(new QuestionPack("<Packname>"));
             var dialog = new CreateNewPackDialog(this);
             dialog.ShowDialog();
+        }
+        private void ExitApplication(object obj)
+        {
+            Application.Current.Shutdown();
         }
     }
 }
