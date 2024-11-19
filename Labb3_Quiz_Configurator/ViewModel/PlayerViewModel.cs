@@ -14,12 +14,19 @@ namespace Labb3_Quiz_Configurator.ViewModel
         private int _currentQuestionIndex = 0; // Håll reda på vilken fråga vi är på
         private int _correctAnswers = 0; // Håller reda på antalet rätta svar
         private int _totalQuestions = 0; // Totalt antal frågor i quizet
+
+        private bool _quizIsRunning;
+
+        private bool _quizIsOver;
+
+        // TODO: Ta bort efter tester?
         private string _testData;
         private string _question; 
         private string _answerOne;
         private string _answerTwo;
         private string _answerThree;
         private string _answerFour;
+        // TODO: Ändra till grå?
         private string _answerOneColor = "Transparent";
         private string _answerTwoColor = "Transparent";
         private string _answerThreeColor = "Transparent";
@@ -27,13 +34,16 @@ namespace Labb3_Quiz_Configurator.ViewModel
 
         private QuestionPackViewModel? _activePack; // Det valda frågepaketet
 
-        // En egenskap som returnerar testdata som en sträng
-        public string TestData { 
-            get => _testData; 
-            private set {
+        //TODO: Ta bort efter tester??
+        //En egenskap som returnerar testdata som en sträng
+        public string TestData
+        {
+            get => _testData;
+            private set
+            {
                 _testData = value;
                 RaisePropertyChanged();
-            }  
+            }
         }
 
         // En egenskap som returnerar en fråga som en sträng
@@ -128,15 +138,39 @@ namespace Labb3_Quiz_Configurator.ViewModel
 
         public string TimeRemaining { get; private set; } = "00:00";
         public string ResultMessage { get; private set; } = string.Empty;
-        public bool QuizIsOver { get; private set; } = false;
 
-        public bool QuizIsRunning { get; private set; } = false;
+        public bool QuizIsRunning
+        {
+            get => _quizIsRunning;
+            set
+            {
+                if (_quizIsRunning != value)
+                {
+                    _quizIsRunning = value;
+                    RaisePropertyChanged(nameof(QuizIsRunning));
+                }
+            }
+        }
+
+        public bool QuizIsOver
+        {
+            get => _quizIsOver;
+            set
+            {
+                if (_quizIsOver != value)
+                {
+                    _quizIsOver = value;
+                    RaisePropertyChanged(nameof(QuizIsOver));
+                }
+            }
+        }
+
 
         public DelegateCommand RestartQuizCommand { get; }
 
-        public DelegateCommand UpdateButtonCommand { get; } // Add Question command, Remo
+        public DelegateCommand UpdateButtonCommand { get; } 
 
-        public DelegateCommand AddQuestionCommand { get; }
+        //public DelegateCommand AddQuestionCommand { get; }
 
         public DelegateCommand AnswerCommand { get; }
 
@@ -149,15 +183,17 @@ namespace Labb3_Quiz_Configurator.ViewModel
 
             QuizIsRunning = true;
 
-            TestData = "Start value: ";
+            // TODO: Ta bort efter tester
+            //TestData = "Start value: ";
 
             _timer = new DispatcherTimer();
             _timer.Interval = TimeSpan.FromSeconds(1);
             _timer.Tick += Timer_Tick;
 
-            RestartQuizCommand = new DelegateCommand(RestartQuiz, CanRestartQuiz);
+            //RestartQuizCommand = new DelegateCommand(RestartQuiz, CanRestartQuiz);
+            RestartQuizCommand = new DelegateCommand(RestartQuiz);
             UpdateButtonCommand = new DelegateCommand(UpdateButton, CanUpdateButton);
-            AddQuestionCommand = new DelegateCommand(AddQuestion, CanAddQuestion);
+            //AddQuestionCommand = new DelegateCommand(AddQuestion, CanAddQuestion);
             AnswerCommand = new DelegateCommand(OnAnswerClicked);
         }
 
@@ -206,6 +242,7 @@ namespace Labb3_Quiz_Configurator.ViewModel
 
         private void ResetAnswerColors()
         {
+            // TODO: Byt färg till grå?
             AnswerOneColor = "Transparent";
             AnswerTwoColor = "Transparent";
             AnswerThreeColor = "Transparent";
@@ -225,6 +262,13 @@ namespace Labb3_Quiz_Configurator.ViewModel
             _timer.Start(); // Starta timern
         }
 
+        private void UpdateTimeDisplay()
+        {
+            TimeRemaining = $"{_remainingTime / 60:D2}:{_remainingTime % 60:D2}";
+            RaisePropertyChanged(nameof(TimeRemaining));
+        }
+
+
         // Hantera knapptryckning
         private void OnAnswerClicked(object selectedAnswer)
         {
@@ -235,12 +279,6 @@ namespace Labb3_Quiz_Configurator.ViewModel
                 CheckAnswer(answer); // Kontrollera om svaret är rätt eller fel
                 _totalQuestions++;
             }
-        }
-
-        private void UpdateTimeDisplay()
-        {
-            TimeRemaining = $"{_remainingTime / 60:D2}:{_remainingTime % 60:D2}";
-            RaisePropertyChanged(nameof(TimeRemaining));
         }
 
         private void Timer_Tick(object? sender, EventArgs e)
@@ -288,6 +326,8 @@ namespace Labb3_Quiz_Configurator.ViewModel
         private void ResetQuiz()
         {
             _currentQuestionIndex = 0;  // Nollställ frågaindex
+            _totalQuestions = 0; // Nollställ totalt antal frågor
+            _correctAnswers = 0; // Nollställ correct Answers
             _remainingTime = 0;          // Återställ timer
             TimeRemaining = "00:00";     // Återställ tiddisplay
 
@@ -297,7 +337,10 @@ namespace Labb3_Quiz_Configurator.ViewModel
             AnswerThree = string.Empty;
             AnswerFour = string.Empty;
             ResultMessage = string.Empty;
+            
+            // Återställ quizets tillstånd
             QuizIsOver = false;
+            QuizIsRunning = true;
 
             RaisePropertyChanged(nameof(TimeRemaining));
             RaisePropertyChanged(nameof(Question));
@@ -312,15 +355,34 @@ namespace Labb3_Quiz_Configurator.ViewModel
         // Återstarta quizet
         private void RestartQuiz(object obj)
         {
-            ResetQuiz();
-            // Återgå till att välja ett nytt frågepaket eller börja ett nytt quiz
-            TestData = "Start value: ";
+            ResetQuiz(); // Återställ quizets tillstånd
+
+            // Återställ timer och fråga
+            if (_activePack != null && _activePack.Questions.Any())
+            {
+                _currentQuestionIndex = 0;  // Återställ frågeindex till första frågan
+                ShowQuestion(_currentQuestionIndex); // Visa första frågan igen
+                StartTimer(_activePack.TimeLimitInSeconds); // Starta timern med den ursprungliga tidsgränsen
+            }
         }
 
-        private bool CanRestartQuiz(object obj)
-        {
-            return QuizIsOver; // Endast möjlig att klicka på om quizet är slut
-        }
+        //private void RestartQuiz(object obj)
+        //{
+        //    ResetQuiz();
+
+        //    // Återställ frågepaketet och visa den första frågan
+        //    if (_activePack != null)
+        //    {
+        //        SetActivePack(_activePack); // Starta om med det aktiva frågepaketet
+        //    }
+        //    // TODO: Ta bort efter tester
+        //    // TestData = "Start value: ";
+        //}
+
+        //private bool CanRestartQuiz(object obj)
+        //{
+        //    return QuizIsOver; // Endast möjlig att klicka på om quizet är slut
+        //}
 
         // Metod för att hantera klick på svar
         public void CheckAnswer(string selectedAnswer)
@@ -399,16 +461,16 @@ namespace Labb3_Quiz_Configurator.ViewModel
         }
 
 
+        // TODO: Ta bort nedan kod efter tester
+        //private bool CanAddQuestion(object? arg)
+        //{
+        //    return true; // Sätt ett villkor om den ska gå att köra eller inte
+        //}
 
-        private bool CanAddQuestion(object? arg)
-        {
-            return true; // Sätt ett villkor om den ska gå att köra eller inte
-        }
-
-        private void AddQuestion(object obj)
-        {
-            Question += "Här är testfrågan";
-        }
+        //private void AddQuestion(object obj)
+        //{
+        //    Question += "Här är testfrågan";
+        //}
 
         private bool CanUpdateButton(object? arg)
         {
