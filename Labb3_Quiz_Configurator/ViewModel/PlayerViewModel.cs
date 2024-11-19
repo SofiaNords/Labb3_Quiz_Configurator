@@ -3,10 +3,8 @@ using System.Windows.Threading;
 
 namespace Labb3_Quiz_Configurator.ViewModel
 {
-    // ViewModel för spelvyn. Hanterar logik relaterad till spelarsessioen.
     public class PlayerViewModel : ViewModelBase
     {
-        // Privata fält
         private readonly MainWindowViewModel? _mainWindowViewModel;
         private DispatcherTimer _timer;
         private int _remainingTime;
@@ -146,8 +144,6 @@ namespace Labb3_Quiz_Configurator.ViewModel
 
         public DelegateCommand RestartQuizCommand { get; }
 
-        public DelegateCommand UpdateButtonCommand { get; } 
-
         public DelegateCommand AnswerCommand { get; }
 
 
@@ -162,11 +158,9 @@ namespace Labb3_Quiz_Configurator.ViewModel
             _timer.Tick += Timer_Tick;
 
             RestartQuizCommand = new DelegateCommand(RestartQuiz);
-            UpdateButtonCommand = new DelegateCommand(UpdateButton, CanUpdateButton);
             AnswerCommand = new DelegateCommand(OnAnswerClicked);
         }
 
-        // Sätt det aktiva frågepaketet och visa den första frågan
         public void SetActivePack(QuestionPackViewModel? pack)
         {
             if (pack != null && pack.Questions.Any()) 
@@ -239,19 +233,15 @@ namespace Labb3_Quiz_Configurator.ViewModel
             }
         }
 
-        // Metod för att hantera klick på svar
         public void CheckAnswer(string selectedAnswer)
         {
-            // Färger för alla knapptryckningar
             string correctColor = "Green";
             string incorrectColor = "Red";
 
-            // Kontrollera om det valda svaret är korrekt
             if (selectedAnswer == _activePack.Questions[_currentQuestionIndex].CorrectAnswer)
             {
-                _correctAnswers++; // Öka antalet korrekta svar
+                _correctAnswers++; 
 
-                // Endast den valda knappen sätts till grönt om rätt svar
                 if (selectedAnswer == AnswerOne)
                 {
                     AnswerOneColor = correctColor;
@@ -271,7 +261,6 @@ namespace Labb3_Quiz_Configurator.ViewModel
             }
             else
             {
-                // Om svaret är fel, sätt den felaktiga knappen till röd
                 if (selectedAnswer == AnswerOne)
                 {
                     AnswerOneColor = incorrectColor;
@@ -289,7 +278,6 @@ namespace Labb3_Quiz_Configurator.ViewModel
                     AnswerFourColor = incorrectColor;
                 }
 
-                // Sätt den rätta knappen till grön
                 if (AnswerOne == _activePack.Questions[_currentQuestionIndex].CorrectAnswer)
                 {
                     AnswerOneColor = correctColor;
@@ -308,7 +296,6 @@ namespace Labb3_Quiz_Configurator.ViewModel
                 }
             }
 
-            // Uppdatera visningen av färger
             RaisePropertyChanged(nameof(AnswerOneColor));
             RaisePropertyChanged(nameof(AnswerTwoColor));
             RaisePropertyChanged(nameof(AnswerThreeColor));
@@ -325,11 +312,10 @@ namespace Labb3_Quiz_Configurator.ViewModel
             else
             {
                 _timer.Stop();
-                MoveToNextQuestion(); // Byt till nästa fråga när tiden är slut
+                MoveToNextQuestion(); 
             }
         }
 
-        //Byt till nästa fråga
         private void MoveToNextQuestion()
         {
             _currentQuestionIndex++;
@@ -337,12 +323,10 @@ namespace Labb3_Quiz_Configurator.ViewModel
 
             if (_activePack != null && _activePack.Questions.Count > _currentQuestionIndex)
             {
-                // Visa nästa fråga om det finns fler frågor
                 ShowQuestion(_currentQuestionIndex);
             }
             else
             {
-                // Om det inte finns fler frågor, avsluta spelet eller återgå till huvudmenyn.
                 EndQuiz();
             }
         }
@@ -357,29 +341,24 @@ namespace Labb3_Quiz_Configurator.ViewModel
             RaisePropertyChanged(nameof(QuizIsRunning));
         }
 
-
-        // Återstarta quizet
         private void RestartQuiz(object obj)
         {
-            ResetQuiz(); // Återställ quizets tillstånd
+            ResetQuiz();
 
-            // Återställ timer och fråga
             if (_activePack != null && _activePack.Questions.Any())
             {
-                _currentQuestionIndex = 0;  // Återställ frågeindex till första frågan
-                ShowQuestion(_currentQuestionIndex); // Visa första frågan igen
-                StartTimer(_activePack.TimeLimitInSeconds); // Starta timern med den ursprungliga tidsgränsen
+                _currentQuestionIndex = 0; 
+                ShowQuestion(_currentQuestionIndex); 
+                StartTimer(_activePack.TimeLimitInSeconds);
             }
         }
-
-        // Nollställ quizets tillstånd
         private void ResetQuiz()
         {
-            _currentQuestionIndex = 0;  // Nollställ frågaindex
-            _totalQuestions = 0; // Nollställ totalt antal frågor
-            _correctAnswers = 0; // Nollställ correct Answers
-            _remainingTime = 0;          // Återställ timer
-            TimeRemaining = "00:00";     // Återställ tiddisplay
+            _currentQuestionIndex = 0; 
+            _totalQuestions = 0;
+            _correctAnswers = 0;
+            _remainingTime = 0;
+            TimeRemaining = "00:00"; 
 
             Question = string.Empty;
             AnswerOne = string.Empty;
@@ -388,7 +367,6 @@ namespace Labb3_Quiz_Configurator.ViewModel
             AnswerFour = string.Empty;
             ResultMessage = string.Empty;
             
-            // Återställ quizets tillstånd
             QuizIsOver = false;
             QuizIsRunning = true;
 
@@ -401,16 +379,5 @@ namespace Labb3_Quiz_Configurator.ViewModel
             RaisePropertyChanged(nameof(ResultMessage));
             RaisePropertyChanged(nameof(QuizIsOver));
         }
-
-        private bool CanUpdateButton(object? arg)
-        {
-            return true; // Sätt ett villkor om den ska gå att köra eller inte
-        }
-
-        private void UpdateButton(object obj)
-        {
-            //TestData += "x";
-        }
-
     }
 }
