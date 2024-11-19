@@ -3,52 +3,45 @@ using System.Collections.ObjectModel;
 
 namespace Labb3_Quiz_Configurator.ViewModel
 {
-    // ViewModel som representerar ett frågepaket.
     public class QuestionPackViewModel : ViewModelBase
     {
-        // En privat variabel för att hålla referensen till modellen QuestionPack
         private readonly QuestionPack model;
 
-        // Egenskap som representerar listan av frågor i paketet.
         public ObservableCollection<Question> Questions { get; }
 
-        // Konstruktorn tar en QuestionPack som parameter
         public QuestionPackViewModel(QuestionPack model)
         {
             this.model = model;
-            Questions = new ObservableCollection<Question>(model.Questions); // Initiera Questions här
+            Questions = new ObservableCollection<Question>(model.Questions); 
         }
 
-        // Egenskap som representerar namnet på frågepaketet.
         public string Name
         {
-            get => model.Name; // Hämtar namnet från modellen.
+            get => model.Name; 
             set
             {
-                model.Name = value; // Sätter namnet i modellen.
-                RaisePropertyChanged(); // Signalera att namnet har ändrats.
+                model.Name = value; 
+                RaisePropertyChanged(); 
             }
         }
 
-        // Egenskap för svårighetsgrad
         public Difficulty Difficulty
         {
-            get => model.Difficulty; // Hämtar svårighetsgraden från modellen.
+            get => model.Difficulty; 
             set
             {
-                model.Difficulty = value; // Sätter svårighetsgraden i modellen.
-                RaisePropertyChanged(); // Signalera att svårighetsgraden har ändrats.
+                model.Difficulty = value; 
+                RaisePropertyChanged(); 
             }
         }
 
-        // Egenskap för tidsgräns i sekunder
         public int TimeLimitInSeconds
         {
-            get => model.TimeLimitInSeconds; // Hämtar tidsgränsen från modellen.
+            get => model.TimeLimitInSeconds; 
             set
             {
-                model.TimeLimitInSeconds = value; // Sätter tidsgränsen i modellen.
-                RaisePropertyChanged(); // Signalera att tidsgränsen har ändrats.
+                model.TimeLimitInSeconds = value; 
+                RaisePropertyChanged(); 
             }
         }
     }
