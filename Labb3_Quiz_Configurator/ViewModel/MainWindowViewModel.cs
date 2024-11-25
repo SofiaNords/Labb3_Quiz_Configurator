@@ -116,9 +116,36 @@ namespace Labb3_Quiz_Configurator.ViewModel
             var dialog = new CreateNewPackDialog(this);
             dialog.ShowDialog();
         }
-        private void ExitApplication(object obj)
+        private async void ExitApplication(object obj)
         {
+            await SaveQuestionPacks();
             Application.Current.Shutdown();
+        }
+
+        private async Task SaveQuestionPacks() 
+        {
+            JsonManager jsonManager = new JsonManager();
+
+            // Hämta listan med frågepaket (t.ex. från ConfigurationViewModel)
+            List<QuestionPack> questionPacks = new List<QuestionPack>();
+
+            foreach (var packViewModel in Packs) // Förutsatt att Packs är en ObservableCollection med alla QuestionPackViewModels
+            {
+                var questionPack = new QuestionPack(packViewModel.Name, packViewModel.Difficulty, packViewModel.TimeLimitInSeconds);
+                questionPack.Questions = new List<Question>();
+
+                foreach (var question in packViewModel.Questions)
+                {
+                    questionPack.Questions.Add(question);
+                }
+                questionPacks.Add(questionPack);
+
+            }
+
+            // Spara frågepaketen via JsonManager
+            await jsonManager.SaveQuestionPacks(questionPacks);
         }
     }
 }
+
+// Loaded event finns inbyggt? 
