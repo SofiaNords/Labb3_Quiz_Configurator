@@ -71,18 +71,24 @@ namespace Labb3_Quiz_Configurator.ViewModel
 
             DeletePackCommand = new DelegateCommand(DeletePack);
 
-            var myPack = new Model.QuestionPack("Default Question Pack");
-
-            ActivePack = new QuestionPackViewModel(myPack);
-
-            mainWindowViewModel.Packs.Add(ActivePack);
-
             DifficultyOptions = new ObservableCollection<Difficulty>((Difficulty[])Enum.GetValues(typeof(Difficulty)));
 
             AddQuestionCommand = new DelegateCommand(AddQuestion);
+            
             RemoveQuestionCommand = new DelegateCommand(RemoveQuestion);
 
             IsQuestionInputVisible = false; 
+        }
+
+        public void AddDefaultPackIfNoPackExists()
+        {
+            // Kontrollera om det redan finns några frågepaket
+            if (!mainWindowViewModel.Packs.Any())
+            {
+                var myPack = new Model.QuestionPack("Default Question Pack");
+                ActivePack = new QuestionPackViewModel(myPack);
+                mainWindowViewModel.Packs.Add(ActivePack);
+            }
         }
 
         private void CreatePack(object obj)

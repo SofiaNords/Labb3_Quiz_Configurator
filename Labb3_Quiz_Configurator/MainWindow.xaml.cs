@@ -11,5 +11,18 @@ namespace Labb3_Quiz_Configurator
             InitializeComponent();
             DataContext = new MainWindowViewModel();
         }
+
+        private async void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            var viewModel = (MainWindowViewModel)DataContext;
+            await viewModel.SaveQuestionPacks();
+        }
+
+        private async void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            var viewModel = (MainWindowViewModel)DataContext;
+            await viewModel.LoadQuestionPacksAsync();
+            viewModel.ConfigurationViewModel.AddDefaultPackIfNoPackExists();
+        }
     }
 }

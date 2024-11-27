@@ -2,6 +2,9 @@
 {
     public class Question
     {
+        // Parameterlös konstruktor för att stödja deserialisering
+        public Question() { }
+
         public Question(string query, string correctAnswer,
             string incorrectAnswer1, string incorrectAnswer2, string incorrectAnswer3)
         {

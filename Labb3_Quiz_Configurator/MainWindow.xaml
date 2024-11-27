@@ -7,7 +7,9 @@
         mc:Ignorable="d"
         xmlns:local="clr-namespace:Labb3_Quiz_Configurator" xmlns:view="clr-namespace:Labb3_Quiz_Configurator.Views" 
         xmlns:viewmodel="clr-namespace:Labb3_Quiz_Configurator.ViewModel" 
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" Height="450" Width="800"
+        Closing="Window_Closing"
+        Loaded="Window_Loaded">
 
     <Grid>
         <Grid.RowDefinitions>

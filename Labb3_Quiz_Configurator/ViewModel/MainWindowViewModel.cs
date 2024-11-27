@@ -12,6 +12,8 @@ namespace Labb3_Quiz_Configurator.ViewModel
         private object _currentView;
         private bool _isFullScreen;
 
+        private JsonManager _jsonManager;
+
         public object CurrentView 
         {
             get => _currentView;
@@ -40,6 +42,8 @@ namespace Labb3_Quiz_Configurator.ViewModel
 
         public MainWindowViewModel()
         {
+            _jsonManager = new JsonManager();
+
             SwitchToPlayerViewCommand = new DelegateCommand(SwitchToPlayerView);
             SwitchToConfigurationViewCommand = new DelegateCommand(SwitchToConfigurationView);
 
@@ -59,6 +63,20 @@ namespace Labb3_Quiz_Configurator.ViewModel
             FullScreenCommand = new DelegateCommand(_ => ToggleFullScreen());
 
             ExitCommand = new DelegateCommand(ExitApplication);
+
+        }
+
+        public async Task LoadQuestionPacksAsync()
+        {
+            // Ladda frågepaket från JSON
+            List<QuestionPack> questionPacks = await _jsonManager.LoadQuestionPacks();
+
+            // Konvertera varje frågepaket till QuestionPackViewModel
+            foreach (var pack in questionPacks)
+            {
+                var packViewModel = new QuestionPackViewModel(pack);
+                Packs.Add(packViewModel);
+            }
         }
 
         public void ToggleFullScreen()
@@ -122,7 +140,7 @@ namespace Labb3_Quiz_Configurator.ViewModel
             Application.Current.Shutdown();
         }
 
-        private async Task SaveQuestionPacks() 
+        public async Task SaveQuestionPacks() 
         {
             JsonManager jsonManager = new JsonManager();
 
