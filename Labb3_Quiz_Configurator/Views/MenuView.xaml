@@ -8,6 +8,18 @@
              xmlns:viewmodel="clr-namespace:Labb3_Quiz_Configurator.ViewModel" 
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.InputBindings>
+        <KeyBinding Key="N" Modifiers="Alt" Command="{Binding NewPackCommand}" />
+        <KeyBinding Key="S" Modifiers="Alt" Command="{Binding Packs}" />
+        <KeyBinding Key="D" Modifiers="Alt" Command="{Binding ConfigurationViewModel.DeletePackCommand}" />
+        <KeyBinding Key="x" Modifiers="Alt" Command="{Binding ExitCommand}" />
+        <KeyBinding Key="Insert" Command="{Binding ConfigurationViewModel.AddQuestionCommand}" />
+        <KeyBinding Key="Delete" Command="{Binding ConfigurationViewModel.RemoveQuestionCommand}" />
+        <KeyBinding Key="O" Modifiers="Ctrl" Command="{Binding OpenPackCommand}" />
+        <KeyBinding Key="P" Modifiers="Ctrl" Command="{Binding SwitchToPlayerViewCommand}" />
+        <KeyBinding Key="E" Modifiers="Ctrl" Command="{Binding SwitchToConfigurationViewCommand}" />
+        <KeyBinding Key="Enter" Modifiers="Alt" Command="{Binding FullScreenCommand}" />
+    </UserControl.InputBindings>
     <StackPanel>
         <Menu>
             <MenuItem Header="_File">
@@ -53,12 +65,12 @@
                           Icon="{fa:Icon SlidersH}"/>
             </MenuItem>
             <MenuItem Header="_View">
-                <MenuItem Header="_Play" 
+                <MenuItem Header="Play" 
                           InputGestureText="Ctrl+P"
                           IsEnabled="{Binding IsPlayEnabled}"
                           Command="{Binding SwitchToPlayerViewCommand}"
                           Icon="{fa:Icon Play}"/>
-                <MenuItem Header="_Edit" 
+                <MenuItem Header="Edit" 
                           InputGestureText="Ctrl+E"
                           Icon="{fa:Icon Pen}"
                           IsEnabled="{Binding IsEditEnabled}"
