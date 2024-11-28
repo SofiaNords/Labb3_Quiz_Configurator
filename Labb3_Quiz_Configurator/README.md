@@ -5,25 +5,27 @@ This application is a WPF-based project designed to configure quiz questions and
 ## Project Overview
 The app consists of two main parts:
 
-1. Configurator: A section for creating and managing question packs, allowing users to add, edit, or delete questions, set difficulty levels, time limits, and other pack options.
+1. Configurator: A section for creating and managing question packs, allowing users to add, edit, or delete questions, set difficulty levels and time limits.
 2. Player: A section for running quiz rounds where users answer questions from an active question pack, with results displayed at the end of the round.
-A third feature (for higher grade level) allows importing questions via an online API, but this is optional.
 
 ## Key Features
+
 1. Configuration Mode:
 
 Users can create, edit, and delete question packs.
 Each question has four options, one of which is correct.
 Pack options allow customization of the quiz's name, difficulty, and time limits.
 The ability to add/remove questions through menus, keyboard shortcuts, and on-screen buttons.
+
 2. Play Mode:
 
 Displays the number of questions in the active pack and the user's progress.
 Questions and answer options are displayed in random order each time.
 A countdown timer is available for each question, with feedback provided after each answer (correct or incorrect).
+
 3. Menu:
 
-A menu with icons (e.g., using Font Awesome) that can be accessed via both mouse and keyboard shortcuts (e.g., Ctrl+O for "Pack Options").
+A menu with icons that can be accessed via both mouse and keyboard shortcuts.
 
 4. JSON Support:
 
