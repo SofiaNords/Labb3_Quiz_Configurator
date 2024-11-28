@@ -75,6 +75,11 @@ namespace Labb3_Quiz_Configurator.ViewModel
                 var packViewModel = new QuestionPackViewModel(pack);
                 Packs.Add(packViewModel);
             }
+
+            if (Packs.Count > 0)
+            {
+                ConfigurationViewModel.ActivePack = Packs[0];
+            }
         }
 
         public void ToggleFullScreen()
