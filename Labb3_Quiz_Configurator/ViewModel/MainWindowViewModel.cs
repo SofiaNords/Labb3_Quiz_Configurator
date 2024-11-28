@@ -68,10 +68,8 @@ namespace Labb3_Quiz_Configurator.ViewModel
 
         public async Task LoadQuestionPacksAsync()
         {
-            // Ladda frågepaket från JSON
             List<QuestionPack> questionPacks = await _jsonManager.LoadQuestionPacks();
 
-            // Konvertera varje frågepaket till QuestionPackViewModel
             foreach (var pack in questionPacks)
             {
                 var packViewModel = new QuestionPackViewModel(pack);
@@ -144,10 +142,9 @@ namespace Labb3_Quiz_Configurator.ViewModel
         {
             JsonManager jsonManager = new JsonManager();
 
-            // Hämta listan med frågepaket (t.ex. från ConfigurationViewModel)
             List<QuestionPack> questionPacks = new List<QuestionPack>();
 
-            foreach (var packViewModel in Packs) // Förutsatt att Packs är en ObservableCollection med alla QuestionPackViewModels
+            foreach (var packViewModel in Packs)
             {
                 var questionPack = new QuestionPack(packViewModel.Name, packViewModel.Difficulty, packViewModel.TimeLimitInSeconds);
                 questionPack.Questions = new List<Question>();
@@ -157,13 +154,8 @@ namespace Labb3_Quiz_Configurator.ViewModel
                     questionPack.Questions.Add(question);
                 }
                 questionPacks.Add(questionPack);
-
             }
-
-            // Spara frågepaketen via JsonManager
             await jsonManager.SaveQuestionPacks(questionPacks);
         }
     }
 }
-
-// Loaded event finns inbyggt? 

@@ -49,9 +49,9 @@ namespace Labb3_Quiz_Configurator.ViewModel
             set
             {
                 _selectedQuestion = value;
-                RaisePropertyChanged(); // Signalera att den valda frågan har ändrats
-                IsQuestionInputVisible = _selectedQuestion != null; // Visa inmatningsfältet om en fråga är vald
-                RaisePropertyChanged(nameof(IsRemoveQuestionEnabled)); // Uppdatera möjligheten att ta bort en fråga
+                RaisePropertyChanged(); 
+                IsQuestionInputVisible = _selectedQuestion != null; 
+                RaisePropertyChanged(nameof(IsRemoveQuestionEnabled));
             }
         }
 
@@ -82,7 +82,6 @@ namespace Labb3_Quiz_Configurator.ViewModel
 
         public void AddDefaultPackIfNoPackExists()
         {
-            // Kontrollera om det redan finns några frågepaket
             if (!mainWindowViewModel.Packs.Any())
             {
                 var myPack = new Model.QuestionPack("Default Question Pack");
