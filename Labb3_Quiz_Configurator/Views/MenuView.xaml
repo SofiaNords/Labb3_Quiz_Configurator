@@ -12,7 +12,7 @@
         <KeyBinding Key="N" Modifiers="Alt" Command="{Binding NewPackCommand}" />
         <KeyBinding Key="S" Modifiers="Alt" Command="{Binding Packs}" />
         <KeyBinding Key="D" Modifiers="Alt" Command="{Binding ConfigurationViewModel.DeletePackCommand}" />
-        <KeyBinding Key="x" Modifiers="Alt" Command="{Binding ExitCommand}" />
+        <KeyBinding Key="F4" Modifiers="Alt" Command="{Binding ExitCommand}" />
         <KeyBinding Key="Insert" Command="{Binding ConfigurationViewModel.AddQuestionCommand}" />
         <KeyBinding Key="Delete" Command="{Binding ConfigurationViewModel.RemoveQuestionCommand}" />
         <KeyBinding Key="O" Modifiers="Ctrl" Command="{Binding OpenPackCommand}" />
@@ -24,10 +24,12 @@
         <Menu>
             <MenuItem Header="_File">
                 <MenuItem Header="_New Question Pack"
+                          InputGestureText="Alt+N"
                           Command="{Binding NewPackCommand}"
                           Icon="{fa:Icon FolderPlus}"
                           />
                 <MenuItem Header="_Select Question Pack"
+                          InputGestureText="Alt+S"
                           Icon="{fa:Icon FolderOpen}">
                     <ItemsControl ItemsSource="{Binding Packs}">
                         <ItemsControl.ItemTemplate>
@@ -41,10 +43,11 @@
                     </ItemsControl>
                 </MenuItem>
                 <MenuItem Header="_Delete Question Pack"
+                          InputGestureText="Alt+D"
                           Command="{Binding ConfigurationViewModel.DeletePackCommand}"
                           Icon="{fa:Icon Trash}"/>
                 <Separator/>
-                <MenuItem Header="E_xit" 
+                <MenuItem Header="Exit" 
                           InputGestureText="Alt+F4"
                           Icon="{fa:Icon DoorOpen}"
                           Command="{Binding ExitCommand}"/>
